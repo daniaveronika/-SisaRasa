@@ -3,6 +3,7 @@
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+
 const handleTransaksi = require("./transaksi-api");
 
 /* =========================================
@@ -19,10 +20,11 @@ const ROOT = path.resolve(
 );
 
 /* =========================================
-   DATA TENANT
+   DASHBOARD DATA
 ========================================= */
 
 const tenants = [
+
     {
         id: 1,
         name: "Yes Resto",
@@ -31,6 +33,7 @@ const tenants = [
         stock: 61,
         normalRevenue: 3200000
     },
+
     {
         id: 2,
         name: "Jajangga",
@@ -39,6 +42,7 @@ const tenants = [
         stock: 8,
         normalRevenue: 2300000
     },
+
     {
         id: 3,
         name: "Fit Me",
@@ -47,6 +51,7 @@ const tenants = [
         stock: 17,
         normalRevenue: 1850000
     },
+
     {
         id: 4,
         name: "Kopi Kenangan",
@@ -55,6 +60,7 @@ const tenants = [
         stock: 13,
         normalRevenue: 1000000
     },
+
     {
         id: 5,
         name: "Dapur Nusantara",
@@ -63,6 +69,7 @@ const tenants = [
         stock: 11,
         normalRevenue: 500000
     },
+
     {
         id: 6,
         name: "Nasi & Rasa",
@@ -71,13 +78,15 @@ const tenants = [
         stock: 9,
         normalRevenue: 300000
     }
+
 ];
 
 /* =========================================
-   DATA MENU UNGGULAN
+   MENU UNGGULAN
 ========================================= */
 
 const menus = [
+
     {
         id: 1,
         tenant: "Yes Resto",
@@ -89,6 +98,7 @@ const menus = [
         credit: "Foto menu lokal",
         source: "/assets/foods/katsu.jpg"
     },
+
     {
         id: 2,
         tenant: "Yes Resto",
@@ -98,8 +108,9 @@ const menus = [
         image: "/assets/foods/karaage.jpg",
         emoji: "🍗",
         credit: "Foto menu lokal",
-        source: "/assets/karaage.jpg"
+        source: "/assets/foods/karaage.jpg"
     },
+
     {
         id: 3,
         tenant: "Yes Resto",
@@ -111,22 +122,11 @@ const menus = [
         credit: "Foto menu lokal",
         source: "/assets/foods/kremes.jpg"
     }
+
 ];
 
 /* =========================================
-   DATA VOUCHER
-========================================= */
-
-const vouchers = Array.from(
-    { length: 10 },
-    (_, index) => ({
-        id: index + 1,
-        status: "active"
-    })
-);
-
-/* =========================================
-   CALCULATE DASHBOARD SUMMARY
+   DASHBOARD STATISTICS
 ========================================= */
 
 function sum(key) {
@@ -141,6 +141,7 @@ function sum(key) {
 function getDashboardData() {
 
     return {
+
         summary: {
 
             transactions: sum("transactions"),
@@ -149,9 +150,7 @@ function getDashboardData() {
 
             normalRevenue: sum("normalRevenue"),
 
-            activeVouchers: vouchers.filter(
-                (voucher) => voucher.status === "active"
-            ).length
+            activeVouchers: 10
 
         },
 
@@ -162,6 +161,7 @@ function getDashboardData() {
         ),
 
         demo: true
+
     };
 
 }
@@ -173,8 +173,12 @@ function getDashboardData() {
 function json(response, statusCode, data) {
 
     response.writeHead(statusCode, {
-        "Content-Type": "application/json; charset=utf-8",
+
+        "Content-Type":
+            "application/json; charset=utf-8",
+
         "Cache-Control": "no-store"
+
     });
 
     response.end(JSON.stringify(data));
@@ -186,130 +190,226 @@ function json(response, statusCode, data) {
 ========================================= */
 
 const mime = {
+
     ".html": "text/html; charset=utf-8",
+
     ".css": "text/css; charset=utf-8",
+
     ".js": "text/javascript; charset=utf-8",
+
     ".json": "application/json; charset=utf-8",
+
     ".svg": "image/svg+xml",
+
     ".png": "image/png",
+
     ".jpg": "image/jpeg",
+
     ".jpeg": "image/jpeg",
+
     ".webp": "image/webp",
+
     ".woff2": "font/woff2",
-    ".woff": "font/woff"
+
+    ".woff": "font/woff",
+
+    ".ttf": "font/ttf",
+
+    ".ico": "image/x-icon"
+
 };
 
 /* =========================================
-   CREATE HTTP SERVER
+   PAGE ROUTES
 ========================================= */
+
+const pages = {
+
+    "/": "pages/dashboard.html",
+
+    "/dashboard": "pages/dashboard.html",
+
+    "/transaksi": "pages/transaksi.html",
+
+    "/tenant": "pages/tenant.html",
+
+    "/voucher": "pages/voucher.html"
+
+};
+
+/* =========================================
+   MAIN SERVER
+========================================= */
+
 const server = http.createServer(
+
     async (request, response) => {
 
         try {
 
-            // API TRANSAKSI KASIR
-            if (await handleTransaksi(request, response)) {
+            /* =================================
+               API TRANSAKSI, TENANT, VOUCHER
+            ================================= */
+
+            const handled = await handleTransaksi(
+                request,
+                response
+            );
+
+            if (handled) {
                 return;
             }
+
+            /* =================================
+               VALIDATE REQUEST METHOD
+            ================================= */
 
             if (request.method !== "GET") {
 
                 return json(response, 405, {
-                    message: "Metode tidak diizinkan"
+
+                    message: "Metode tidak diizinkan."
+
                 });
 
             }
 
             const url = new URL(
+
                 request.url,
+
                 "http://localhost"
+
             );
 
-            /* REST API DASHBOARD */
+            /* =================================
+               API DASHBOARD
+            ================================= */
 
             if (
                 url.pathname === "/api/kasir/dashboard"
             ) {
 
                 return json(
+
                     response,
+
                     200,
+
                     getDashboardData()
+
                 );
 
             }
 
-            /* API NOT FOUND */
+            /* =================================
+               UNKNOWN API
+            ================================= */
 
             if (url.pathname.startsWith("/api/")) {
 
                 return json(response, 404, {
-                    message: "Endpoint tidak ditemukan"
+
+                    message: "Endpoint tidak ditemukan.",
+
+                    endpoint: url.pathname
+
                 });
 
             }
 
-            /* SERVE FRONTEND FILES */
+            /* =================================
+               FRONTEND FILES
+            ================================= */
 
             const relativePath =
-                url.pathname === "/" ||
-                url.pathname === "/dashboard"
-                    ? "pages/dashboard.html"
-                    : decodeURIComponent(url.pathname)
-                        .replace(/^\/+/, "");
+                pages[url.pathname] ||
+
+                decodeURIComponent(url.pathname)
+                    .replace(/^\/+/, "");
 
             const filePath = path.resolve(
+
                 ROOT,
+
                 relativePath
+
             );
 
-            /* SECURITY: PREVENT PATH TRAVERSAL */
+            /* SECURITY VALIDATION */
 
-            if (!filePath.startsWith(ROOT + path.sep)) {
+            if (
+                !filePath.startsWith(ROOT + path.sep)
+            ) {
 
                 return json(response, 403, {
-                    message: "Akses ditolak"
+
+                    message: "Akses ditolak."
+
                 });
 
             }
 
             const file = await fs.readFile(filePath);
 
-            const extension = path.extname(filePath);
+            const extension = path.extname(
+                filePath
+            ).toLowerCase();
 
             response.writeHead(200, {
+
                 "Content-Type":
                     mime[extension] ||
-                    "application/octet-stream"
+                    "application/octet-stream",
+
+                "Cache-Control": "no-cache"
+
             });
 
             response.end(file);
 
         } catch (error) {
 
+            console.error(error);
+
+            if (response.headersSent) {
+                response.end();
+                return;
+            }
+
             const notFound =
                 error.code === "ENOENT" ||
                 error.code === "EISDIR";
 
             json(
+
                 response,
+
                 notFound ? 404 : 500,
+
                 {
+
                     message: notFound
-                        ? "File tidak ditemukan"
-                        : "Terjadi kesalahan server"
+
+                        ? "File tidak ditemukan."
+
+                        : "Terjadi kesalahan server."
+
                 }
+
             );
 
         }
+
     }
+
 );
 
 /* =========================================
-   HANDLE SERVER ERROR
+   SERVER ERROR HANDLER
 ========================================= */
 
-server.on("error", (error) => {
+server.on("error", error => {
 
     if (error.code === "EADDRINUSE") {
 
@@ -334,20 +434,35 @@ server.on("error", (error) => {
 server.listen(PORT, "127.0.0.1", () => {
 
     console.log("");
-    console.log("======================================");
-    console.log(" SISARASA DASHBOARD KASIR");
+
     console.log("======================================");
 
-    console.log(
-        `Frontend : http://127.0.0.1:${PORT}`
-    );
+    console.log(" SISARASA CASHIER SYSTEM");
 
-    console.log(
-        `API      : http://127.0.0.1:${PORT}/api/kasir/dashboard`
-    );
-
-    console.log("Status   : Server Running");
     console.log("======================================");
-    console.log("");
+
+    console.log(`Dashboard : http://127.0.0.1:${PORT}/`);
+
+    console.log(`Transaksi : http://127.0.0.1:${PORT}/transaksi`);
+
+    console.log(`Tenant    : http://127.0.0.1:${PORT}/tenant`);
+
+    console.log(`Voucher   : http://127.0.0.1:${PORT}/voucher`);
+
+    console.log("--------------------------------------");
+
+    console.log("API Dashboard : /api/kasir/dashboard");
+
+    console.log("API Transaksi : /api/kasir/transaksi");
+
+    console.log("API Tenant    : /api/kasir/tenant");
+
+    console.log("API Voucher   : /api/kasir/voucher");
+
+    console.log("--------------------------------------");
+
+    console.log("Status : Server Running");
+
+    console.log("======================================");
 
 });

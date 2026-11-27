@@ -183,7 +183,22 @@ async function loadData() {
         }
 
         state = await response.json();
+        if (
+    appliedVoucher &&
+    !(state.vouchers || []).some(
+        item => item.code === appliedVoucher &&
+                item.status === "active"
+    )
+) {
 
+    appliedVoucher = "";
+
+    $("voucher-message").textContent =
+        "Voucher tidak lagi tersedia.";
+
+    $("voucher-message").style.color = "#c75c4b";
+
+}
         // Sesuaikan keranjang dengan stok terbaru.
 
         for (const id of Object.keys(cart)) {
@@ -566,22 +581,27 @@ function renderCart() {
 function calculatePayment() {
 
     const subtotal = getCartItems().reduce(
+
         (total, item) => total + item.total,
+
         0
+
     );
 
-    let discount = 0;
+    const voucher = (state.vouchers || []).find(
 
-    if (
-        state.voucher &&
-        appliedVoucher === state.voucher.code
-    ) {
+        item => item.code === appliedVoucher &&
+                item.status === "active"
 
-        discount = Math.round(
-            subtotal * state.voucher.percent / 100
-        );
+    );
 
-    }
+    const discount = voucher
+
+        ? Math.round(
+            subtotal * voucher.percent / 100
+        )
+
+        : 0;
 
     return {
 
@@ -628,9 +648,9 @@ $("apply-voucher").addEventListener("click", () => {
 
     const message = $("voucher-message");
 
-    if (!code) {
+    appliedVoucher = "";
 
-        appliedVoucher = "";
+    if (!code) {
 
         message.textContent = "";
 
@@ -640,27 +660,36 @@ $("apply-voucher").addEventListener("click", () => {
 
     }
 
-    if (
-        state.voucher &&
-        code === state.voucher.code
-    ) {
+    const voucher = (state.vouchers || []).find(
 
-        appliedVoucher = code;
+        item => item.code === code
+
+    );
+
+    if (!voucher) {
 
         message.textContent =
-            `Voucher berhasil! Diskon ${state.voucher.percent}%.`;
+            "Kode voucher tidak valid.";
+
+        message.style.color = "#c75c4b";
+
+    } else if (voucher.status !== "active") {
+
+        message.textContent =
+            "Kuota voucher sudah habis.";
+
+        message.style.color = "#c75c4b";
+
+    } else {
+
+        appliedVoucher = voucher.code;
+
+        message.textContent =
+            `Voucher berhasil! Diskon ${voucher.percent}%.`;
 
         message.style.color = "#57912f";
 
         toast("Voucher berhasil digunakan.");
-
-    } else {
-
-        appliedVoucher = "";
-
-        message.textContent = "Kode voucher tidak valid.";
-
-        message.style.color = "#c75c4b";
 
     }
 

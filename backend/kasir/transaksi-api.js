@@ -4,79 +4,56 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
 
+const {
+    getVouchers,
+    getVoucherOverview
+} = require("./voucher-api");
+
 const DATA_FILE = path.join(
     __dirname,
     "transaksi-data.json"
 );
 
 /* =========================================
-   DATA TENANT
+   MASTER DATA TENANT
 ========================================= */
 
 const tenants = [
-
     "Yes Resto",
     "Jajangga",
     "Fit Me",
     "Kopi Kenangan",
     "Dapur Nusantara",
     "Nasi & Rasa"
-
 ].map((name, index) => ({
-
     id: index + 1,
-
     name
-
 }));
 
 /* =========================================
-   MASTER DATA MENU
-   Nama, Harga, Foto, Stok Awal
+   MASTER DATA MAKANAN
 ========================================= */
 
 const menus = [
-
     ["Ayam Kremes", 15000, "kremes.jpg", 20],
-
     ["Karaage", 15000, "karaage.jpg", 25],
-
     ["Nasi Katsu", 15000, "katsu.jpg", 18],
-
     ["Fish and Chips", 15000, "fish.jpg", 15],
-
     ["Nasi Goreng", 15000, "goreng.jpg", 30],
-
     ["Bihun Goreng", 15000, "bihun.jpg", 18],
-
     ["Nasi Soto", 15000, "soto.jpg", 22],
-
     ["Nasi Pecel", 15000, "pecel.jpg", 20],
-
     ["Kwetiau", 15000, "kwetiau.jpg", 16],
-
     ["Mie Pangsit", 15000, "pangsit.jpg", 20]
-
 ];
 
-/* =========================================
-   MENU EACH TENANT
-========================================= */
-
 const selections = [
-
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-
     [1, 4, 5],
-
     [2, 3, 7],
-
     [0, 8, 9],
-
     [4, 6, 7],
-
     [0, 5, 9]
-
 ];
 
 const products = tenants.flatMap(tenant =>
@@ -87,36 +64,17 @@ const products = tenants.flatMap(tenant =>
             menus[index];
 
         return {
-
             id: tenant.id * 100 + index + 1,
-
             tenantId: tenant.id,
-
             name,
-
             price,
-
             image: "/assets/foods/" + image,
-
             stock
-
         };
 
     })
 
 );
-
-/* =========================================
-   DEMO VOUCHER
-========================================= */
-
-const voucher = {
-
-    code: "SISA20",
-
-    percent: 20
-
-};
 
 /* =========================================
    READ TRANSACTION DATA
@@ -126,16 +84,22 @@ function readOrders() {
 
     try {
 
-        return JSON.parse(
+        const orders = JSON.parse(
             fs.readFileSync(DATA_FILE, "utf8")
         );
+
+        if (!Array.isArray(orders)) {
+            throw new Error(
+                "Format transaksi-data.json tidak valid."
+            );
+        }
+
+        return orders;
 
     } catch (error) {
 
         if (error.code === "ENOENT") {
-
             return [];
-
         }
 
         throw error;
@@ -153,13 +117,9 @@ function saveOrders(orders) {
     const temporary = DATA_FILE + ".tmp";
 
     fs.writeFileSync(
-
         temporary,
-
         JSON.stringify(orders, null, 2),
-
         "utf8"
-
     );
 
     fs.renameSync(temporary, DATA_FILE);
@@ -167,7 +127,7 @@ function saveOrders(orders) {
 }
 
 /* =========================================
-   CALCULATE AVAILABLE STOCK
+   GET TRANSACTION DATA AND STOCK
 ========================================= */
 
 function getData(orders = readOrders()) {
@@ -179,17 +139,16 @@ function getData(orders = readOrders()) {
         for (const item of order.items) {
 
             sold.set(
-
                 item.id,
-
                 (sold.get(item.id) || 0) +
                 item.quantity
-
             );
 
         }
 
     }
+
+    const vouchers = getVouchers(orders);
 
     return {
 
@@ -200,19 +159,22 @@ function getData(orders = readOrders()) {
             ...product,
 
             stock: Math.max(
-
                 0,
-
                 product.stock -
                 (sold.get(product.id) || 0)
-
             )
 
         })),
 
         orders: [...orders].reverse(),
 
-        voucher
+        voucher: vouchers.find(
+            item =>
+                item.code === "SISA20" &&
+                item.status === "active"
+        ) || null,
+
+        vouchers
 
     };
 
@@ -225,12 +187,10 @@ function getData(orders = readOrders()) {
 function json(response, status, data) {
 
     response.writeHead(status, {
-
         "Content-Type":
             "application/json; charset=utf-8",
 
         "Cache-Control": "no-store"
-
     });
 
     response.end(JSON.stringify(data));
@@ -238,7 +198,7 @@ function json(response, status, data) {
 }
 
 /* =========================================
-   VALIDATION ERROR
+   ERROR VALIDATION
 ========================================= */
 
 function fail(message, status = 400) {
@@ -264,9 +224,7 @@ async function readBody(request) {
         body += chunk;
 
         if (Buffer.byteLength(body) > 65536) {
-
             fail("Data terlalu besar.", 413);
-
         }
 
     }
@@ -284,33 +242,21 @@ async function readBody(request) {
 }
 
 /* =========================================
-   CHECKOUT LOGIC
+   CHECKOUT TRANSACTION
 ========================================= */
 
 function checkout(input) {
 
-    // Validasi keranjang
-
     if (
-
         !input ||
-
         !Array.isArray(input.items) ||
-
         input.items.length === 0
-
     ) {
-
         fail("Keranjang masih kosong.");
-
     }
 
-    // Validasi metode pembayaran
-
     if (!["cash", "qris"].includes(input.payment)) {
-
         fail("Metode pembayaran tidak valid.");
-
     }
 
     const orders = readOrders();
@@ -319,53 +265,43 @@ function checkout(input) {
 
     const quantities = new Map();
 
-    // Validasi jumlah pesanan
+    /* VALIDASI JUMLAH PESANAN */
 
     for (const item of input.items) {
 
         if (
-
             !item ||
-
             !Number.isSafeInteger(item.id) ||
-
             !Number.isSafeInteger(item.quantity) ||
-
             item.quantity < 1
-
         ) {
-
             fail("Jumlah pesanan tidak valid.");
-
         }
 
-        quantities.set(
-
-            item.id,
-
+        const quantity =
             (quantities.get(item.id) || 0) +
-            item.quantity
+            item.quantity;
 
-        );
+        if (!Number.isSafeInteger(quantity)) {
+            fail("Jumlah pesanan tidak valid.");
+        }
+
+        quantities.set(item.id, quantity);
 
     }
 
     const items = [];
 
-    // Validasi stok setiap produk
+    /* VALIDASI STOK */
 
     for (const [id, quantity] of quantities) {
 
         const product = data.products.find(
-
-            product => product.id === id
-
+            item => item.id === id
         );
 
         if (!product) {
-
             fail("Menu tidak ditemukan.");
-
         }
 
         if (quantity > product.stock) {
@@ -378,54 +314,55 @@ function checkout(input) {
         }
 
         items.push({
-
             id,
-
             tenantId: product.tenantId,
-
             name: product.name,
-
             price: product.price,
-
             quantity,
-
             total: product.price * quantity
-
         });
 
     }
 
-    /* VALIDATE VOUCHER */
+    /* VALIDASI VOUCHER */
 
     const code = String(input.voucher || "")
         .trim()
         .toUpperCase();
 
-    if (code && code !== voucher.code) {
-
-        fail("Kode voucher tidak valid.");
-
-    }
-
-    /* CALCULATE PAYMENT */
-
-    const subtotal = items.reduce(
-
-        (sum, item) => sum + item.total,
-
-        0
-
+    const selectedVoucher = getVouchers(orders).find(
+        voucher => voucher.code === code
     );
 
-    const discount = code
+    if (code && !selectedVoucher) {
+        fail("Kode voucher tidak valid.");
+    }
+
+    if (
+        selectedVoucher &&
+        selectedVoucher.remaining <= 0
+    ) {
+        fail("Kuota voucher sudah habis.", 409);
+    }
+
+    /* HITUNG PEMBAYARAN */
+
+    const subtotal = items.reduce(
+        (sum, item) => sum + item.total,
+        0
+    );
+
+    const discount = selectedVoucher
 
         ? Math.round(
-            subtotal * voucher.percent / 100
+            subtotal * selectedVoucher.percent / 100
         )
 
         : 0;
 
-    /* CREATE TRANSACTION */
+    const total = subtotal - discount;
+
+    /* SIMPAN TRANSAKSI */
 
     const order = {
 
@@ -440,15 +377,13 @@ function checkout(input) {
 
         discount,
 
-        total: subtotal - discount,
+        total,
 
         voucher: code || null,
 
         payment: input.payment
 
     };
-
-    /* SAVE TRANSACTION */
 
     orders.push(order);
 
@@ -467,60 +402,54 @@ function checkout(input) {
 }
 
 /* =========================================
-   REST API TRANSAKSI
+   DATE CONFIGURATION - ASIA/JAKARTA
 ========================================= */
 
+function dateKey(value) {
+
+    const parts = Object.fromEntries(
+
+        new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Jakarta",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        })
+        .formatToParts(new Date(value))
+        .map(part => [
+            part.type,
+            part.value
+        ])
+
+    );
+
+    return `${parts.year}-${parts.month}-${parts.day}`;
+
+}
+
+function getHour(value) {
+
+    return Number(
+
+        new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Jakarta",
+            hour: "2-digit",
+            hourCycle: "h23"
+        }).format(new Date(value))
+
+    );
+
+}
+
 /* =========================================
-   TENANT BACKEND
+   TENANT OVERVIEW
 ========================================= */
 
 function getTenantOverview() {
 
     const data = getData();
 
-    /* DATE CONFIGURATION */
-
-    const dateFormatter = new Intl.DateTimeFormat(
-        "en-CA",
-        {
-            timeZone: "Asia/Jakarta",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        }
-    );
-
-    function dateKey(value) {
-
-        const parts = Object.fromEntries(
-
-            dateFormatter.formatToParts(
-                new Date(value)
-            ).map(part => [
-                part.type,
-                part.value
-            ])
-
-        );
-
-        return `${parts.year}-${parts.month}-${parts.day}`;
-
-    }
-
     const today = dateKey(new Date());
-
-    const hourFormatter = new Intl.DateTimeFormat(
-        "en-GB",
-        {
-            timeZone: "Asia/Jakarta",
-            hour: "2-digit",
-            hourCycle: "h23"
-        }
-    );
-
-    /* =========================================
-       PREPARE TENANT DATA
-    ========================================= */
 
     const summaries = data.tenants.map(tenant => ({
 
@@ -541,19 +470,12 @@ function getTenantOverview() {
         remainingStock: 0,
 
         revenueChart: [
-
             { label: "00–04", value: 0 },
-
             { label: "04–08", value: 0 },
-
             { label: "08–12", value: 0 },
-
             { label: "12–16", value: 0 },
-
             { label: "16–20", value: 0 },
-
             { label: "20–24", value: 0 }
-
         ],
 
         products: []
@@ -563,35 +485,26 @@ function getTenantOverview() {
     const tenantMap = new Map(
 
         summaries.map(tenant => [
-
             tenant.id,
-
             tenant
-
         ])
 
     );
 
     const productMap = new Map();
 
-    /* =========================================
-       CALCULATE STOCK
-    ========================================= */
+    /* HITUNG STOK MAKANAN */
 
     for (const product of data.products) {
 
         const tenant = tenantMap.get(
-
             product.tenantId
-
         );
 
         if (!tenant) continue;
 
         const masterProduct = products.find(
-
             item => item.id === product.id
-
         );
 
         const initialStock = masterProduct
@@ -601,11 +514,8 @@ function getTenantOverview() {
             : product.stock;
 
         const soldAllTime = Math.max(
-
             0,
-
             initialStock - product.stock
-
         );
 
         const item = {
@@ -636,34 +546,23 @@ function getTenantOverview() {
 
     }
 
-    /* =========================================
-       CALCULATE TODAY'S TRANSACTIONS
-    ========================================= */
+    /* FILTER TRANSAKSI HARI INI */
 
     const todayOrders = data.orders.filter(
-
         order => dateKey(order.createdAt) === today
-
     );
+
+    /* HITUNG STATISTIK TENANT */
 
     for (const order of todayOrders) {
 
         if (order.subtotal <= 0) continue;
 
-        const hour = Number(
-
-            hourFormatter.format(
-                new Date(order.createdAt)
-            )
-
-        );
+        const hour = getHour(order.createdAt);
 
         const chartIndex = Math.min(
-
             5,
-
             Math.floor(hour / 4)
-
         );
 
         const countedTenants = new Set();
@@ -675,8 +574,6 @@ function getTenantOverview() {
         let previousAllocated = 0;
 
         for (const item of order.items) {
-
-            /* Calculate net revenue after discount */
 
             cumulativeGross += item.total;
 
@@ -694,20 +591,16 @@ function getTenantOverview() {
             previousAllocated = allocatedRevenue;
 
             const tenant = tenantMap.get(
-
                 item.tenantId
-
             );
 
             const product = productMap.get(
-
                 item.id
-
             );
 
             if (!tenant || !product) continue;
 
-            /* Tenant statistics */
+            /* PENDAPATAN TENANT */
 
             tenant.revenue += netRevenue;
 
@@ -717,13 +610,13 @@ function getTenantOverview() {
                 chartIndex
             ].value += netRevenue;
 
-            /* Product statistics */
+            /* PENDAPATAN PRODUK */
 
             product.soldToday += item.quantity;
 
             product.revenue += netRevenue;
 
-            /* Count each transaction once */
+            /* TOTAL TRANSAKSI TENANT */
 
             if (!countedTenants.has(tenant.id)) {
 
@@ -732,6 +625,8 @@ function getTenantOverview() {
                 countedTenants.add(tenant.id);
 
             }
+
+            /* TOTAL TRANSAKSI PRODUK */
 
             if (!countedProducts.has(product.id)) {
 
@@ -745,16 +640,14 @@ function getTenantOverview() {
 
     }
 
-    /* SORT PRODUCTS */
+    /* SORT PRODUK TERLARIS */
 
     for (const tenant of summaries) {
 
         tenant.products.sort(
 
             (a, b) =>
-
                 b.soldToday - a.soldToday ||
-
                 a.name.localeCompare(b.name)
 
         );
@@ -772,17 +665,15 @@ function getTenantOverview() {
 }
 
 /* =========================================
-   REST API TRANSAKSI & TENANT
+   REST API HANDLER
+   TRANSAKSI, TENANT, VOUCHER
 ========================================= */
 
 async function handleTransaksi(request, response) {
 
     const url = new URL(
-
         request.url,
-
         "http://localhost"
-
     );
 
     const isTransaksi =
@@ -791,7 +682,10 @@ async function handleTransaksi(request, response) {
     const isTenant =
         url.pathname === "/api/kasir/tenant";
 
-    if (!isTransaksi && !isTenant) {
+    const isVoucher =
+        url.pathname === "/api/kasir/voucher";
+
+    if (!isTransaksi && !isTenant && !isVoucher) {
 
         return false;
 
@@ -799,106 +693,96 @@ async function handleTransaksi(request, response) {
 
     try {
 
-        /* =====================================
-           API TENANT
-        ===================================== */
+        /* GET TRANSAKSI */
 
-        if (isTenant) {
-
-            if (request.method !== "GET") {
-
-                json(response, 405, {
-
-                    message: "Metode tidak diizinkan."
-
-                });
-
-                return true;
-
-            }
+        if (
+            isTransaksi &&
+            request.method === "GET"
+        ) {
 
             json(
-
                 response,
-
                 200,
-
-                getTenantOverview()
-
+                getData()
             );
 
             return true;
 
         }
 
-        /* =====================================
-           API TRANSAKSI
-        ===================================== */
+        /* POST CHECKOUT */
 
-        if (request.method === "GET") {
-
-            json(
-
-                response,
-
-                200,
-
-                getData()
-
-            );
-
-        }
-
-        else if (request.method === "POST") {
+        if (
+            isTransaksi &&
+            request.method === "POST"
+        ) {
 
             const input = await readBody(request);
 
             json(
-
                 response,
-
                 201,
-
                 checkout(input)
-
             );
 
-        }
-
-        else {
-
-            json(response, 405, {
-
-                message: "Metode tidak diizinkan."
-
-            });
+            return true;
 
         }
+
+        /* GET TENANT */
+
+        if (
+            isTenant &&
+            request.method === "GET"
+        ) {
+
+            json(
+                response,
+                200,
+                getTenantOverview()
+            );
+
+            return true;
+
+        }
+
+        /* GET VOUCHER */
+
+        if (
+            isVoucher &&
+            request.method === "GET"
+        ) {
+
+            json(
+                response,
+                200,
+                getVoucherOverview(readOrders())
+            );
+
+            return true;
+
+        }
+
+        /* METHOD NOT ALLOWED */
+
+        json(response, 405, {
+            message: "Metode tidak diizinkan."
+        });
 
     } catch (error) {
 
-        if (!error.status) {
-
-            console.error(error);
-
-        }
+        console.error(error);
 
         json(
-
             response,
-
             error.status || 500,
-
             {
-
                 message: error.status
 
                     ? error.message
 
                     : "Terjadi kesalahan server."
-
             }
-
         );
 
     }
