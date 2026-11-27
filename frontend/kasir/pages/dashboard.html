@@ -1,0 +1,216 @@
+﻿<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Kasir | SisaRasa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script defer src="/js/dashboard.js"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a class="brand" href="/">
+            <img
+                src="/assets/logo.svg"
+                alt="SisaRasa"
+                class="brand-logo"
+            >
+        </a>
+
+        <p class="nav-caption">WORKSPACE KASIR</p>
+
+        <nav>
+            <a class="nav-item active" href="/">
+                <span data-icon="dashboard"></span>
+                Dashboard
+            </a>
+
+            <button class="nav-item future" data-page="Transaksi">
+                <span data-icon="receipt"></span>
+                Transaksi
+            </button>
+
+            <button class="nav-item future" data-page="Tenant">
+                <span data-icon="store"></span>
+                Tenant
+            </button>
+
+            <button class="nav-item future" data-page="Voucher">
+                <span data-icon="ticket"></span>
+                Voucher
+            </button>
+        </nav>
+
+        <div class="side-bottom">
+            <div class="side-note">
+                <span data-icon="leaf"></span>
+                <strong>Save food, share good.</strong>
+                <small>Setiap porsi punya arti.</small>
+            </div>
+
+            <button class="nav-item future" data-page="Logout">
+                <span data-icon="logout"></span>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="workspace">
+
+        <!-- HEADER -->
+        <header class="topbar">
+            <div>
+                <div class="eyebrow">KASIR / OVERVIEW</div>
+                <h1>Dashboard<span class="dot">.</span></h1>
+            </div>
+
+            <div class="header-actions">
+                <label class="search">
+                    <span data-icon="search"></span>
+                    <input
+                        id="global-search"
+                        type="search"
+                        placeholder="Cari tenant atau menu..."
+                    >
+                </label>
+
+                <button id="refresh" class="icon-btn"
+                    title="Muat ulang data">
+                    <span data-icon="refresh"></span>
+                </button>
+
+                <div class="profile">
+                    <span class="avatar">B</span>
+                    <span>
+                        <strong>Bu Irma</strong>
+                        <small>Kasir</small>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- WELCOME BANNER -->
+        <section class="welcome">
+            <div>
+                <div class="welcome-kicker">
+                    <span class="live-dot"></span>
+                    RINGKASAN KASIR
+                </div>
+
+                <h2>Selamat datang, Bu Irma! <span>✳</span></h2>
+
+                <p>
+                    Pantau penjualan, tenant, dan menu unggulan
+                    dalam satu tempat.
+                </p>
+            </div>
+
+            <div class="date-pill">
+                <span data-icon="calendar"></span>
+                <span id="date">Hari ini</span>
+            </div>
+        </section>
+
+        <div id="error" class="error" role="alert" hidden></div>
+
+        <!-- STATISTIC CARDS -->
+        <section class="stats" id="stats"></section>
+
+        <!-- TENANT HARI INI -->
+        <section class="section tenant-section">
+
+            <div class="section-head">
+                <div>
+                    <h2>Tenant Hari Ini</h2>
+                    <p>Ringkasan pendapatan, transaksi, dan stok tenant.</p>
+                </div>
+
+                <label class="search tenant-search">
+                    <span data-icon="search"></span>
+                    <input
+                        id="tenant-search"
+                        type="search"
+                        placeholder="Cari nama tenant..."
+                    >
+                </label>
+            </div>
+
+            <div class="table-card">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Tenant</th>
+                                <th>Pendapatan</th>
+                                <th>Transaksi</th>
+                                <th>Sisa</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tenant-rows">
+                            <tr>
+                                <td colspan="5">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span id="table-info">Memuat data...</span>
+
+                    <div class="pagination">
+                        <button id="prev" aria-label="Sebelumnya">‹</button>
+                        <span id="page-number">1 / 1</span>
+                        <button id="next" aria-label="Selanjutnya">›</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU UNGGULAN -->
+        <section class="section menus-section">
+            <div class="section-head">
+                <div>
+                    <h2>Menu Unggulan</h2>
+                    <p>Menu dengan penjualan tertinggi hari ini.</p>
+                </div>
+
+                <span class="menu-tag">
+                    <span data-icon="flame"></span>
+                    Favorit pelanggan
+                </span>
+            </div>
+
+            <div class="menu-grid" id="menus"></div>
+
+            <details class="credits">
+                <summary>Kredit foto menu</summary>
+                <div id="credits"></div>
+            </details>
+        </section>
+
+        <footer class="footer">
+            SisaRasa © <span id="year"></span>
+            <span id="demo-label"></span>
+        </footer>
+    </main>
+
+    <!-- POPUP DETAIL TENANT -->
+    <dialog id="detail">
+        <div class="modal-head">
+            <h2>Detail Tenant</h2>
+            <button id="close-detail" class="icon-btn">×</button>
+        </div>
+
+        <div id="detail-content"></div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+</body>
+</html>
