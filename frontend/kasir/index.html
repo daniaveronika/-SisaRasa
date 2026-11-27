@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisaRasa | Kasir</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a class="brand" href="#dashboard">
+            <span class="brand-icon">♻</span>
+            <span>
+                Sisa<span class="brand-accent">Rasa</span>
+                <small>Save food, save the future</small>
+            </span>
+        </a>
+
+        <nav aria-label="Menu kasir">
+            <a href="#dashboard" data-page="dashboard">
+                <span class="nav-icon">▦</span> Dashboard
+            </a>
+            <a href="#transaksi" data-page="transaksi">
+                <span class="nav-icon">▤</span> Transaksi
+            </a>
+            <a href="#tenant" data-page="tenant">
+                <span class="nav-icon">⌂</span> Tenant
+            </a>
+            <a href="#voucher" data-page="voucher">
+                <span class="nav-icon">◇</span> Voucher
+            </a>
+        </nav>
+
+        <button class="logout" id="logout">
+            ↪ &nbsp; Logout
+        </button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="topbar">
+            <h1 id="page-title">Dashboard</h1>
+
+            <div class="top-actions">
+                <label class="search">
+                    <input id="global-search"
+                           type="search"
+                           placeholder="Search anything..."
+                           aria-label="Cari pada halaman">
+                    <span>⌕</span>
+                </label>
+
+                <button class="notification"
+                        id="notification"
+                        aria-label="Notifikasi">♧</button>
+
+                <span class="profile">◉ &nbsp; Bu Irma</span>
+            </div>
+        </header>
+
+        <!-- HALAMAN DASHBOARD -->
+        <section id="page-dashboard" class="page">
+
+            <div class="stats four" id="dashboard-stats"></div>
+
+            <div class="section-heading">
+                <h2>Tenant Hari Ini</h2>
+
+                <label class="search table-search">
+                    <input id="tenant-search"
+                           type="search"
+                           placeholder="Cari nama tenant..."
+                           aria-label="Cari tenant">
+                    <span>⌕</span>
+                </label>
+            </div>
+
+            <div class="panel table-panel">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Tenant</th>
+                                <th>Pendapatan</th>
+                                <th>Transaksi</th>
+                                <th>Sisa</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-tenants"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="dashboard-pagination"></div>
+            </div>
+
+            <h2 class="section-title">Menu Unggulan</h2>
+            <div class="featured-grid" id="featured-menu"></div>
+        </section>
+
+        <!-- HALAMAN TRANSAKSI -->
+        <section id="page-transaksi" class="page" hidden>
+
+            <div class="tenant-tabs" id="transaction-tabs"></div>
+
+            <div class="transaction-layout">
+
+                <div class="product-grid" id="product-grid"></div>
+
+                <aside class="panel order-panel">
+
+                    <div class="section-heading">
+                        <h2>Order Detail</h2>
+                        <button id="clear-cart" class="text-danger">
+                            Clear All
+                        </button>
+                    </div>
+
+                    <p class="muted" id="order-count">0 item</p>
+
+                    <div id="cart-items"></div>
+
+                    <div class="payment-summary">
+                        <h3>Payment Summary</h3>
+
+                        <div>
+                            <span>Sub Total</span>
+                            <span id="subtotal">Rp 0</span>
+                        </div>
+
+                        <div>
+                            <span>Tax (0%)</span>
+                            <span>Rp 0</span>
+                        </div>
+
+                        <div>
+                            <span>Discount</span>
+                            <span id="discount">Rp 0</span>
+                        </div>
+
+                        <div class="total">
+                            <span>Total Amount</span>
+                            <strong id="total">Rp 0</strong>
+                        </div>
+                    </div>
+
+                    <button class="primary full" id="checkout" disabled>
+                        Checkout
+                    </button>
+                </aside>
+            </div>
+        </section>
+
+        <!-- HALAMAN TENANT -->
+        <section id="page-tenant" class="page" hidden>
+
+            <div class="tenant-tabs" id="detail-tabs"></div>
+            <div class="stats four" id="tenant-stats"></div>
+
+            <div class="chart-grid">
+
+                <article class="panel chart-panel">
+
+                    <div class="section-heading">
+                        <h2>Pendapatan Tenant</h2>
+                        <span class="tag">Hari Ini</span>
+                    </div>
+
+                    <div class="bar-chart"
+                         id="bar-chart"
+                         aria-label="Grafik pendapatan per jam">
+                    </div>
+
+                    <div class="chart-caption">
+                        <span>Puncak Penjualan</span>
+                        <strong id="peak-time"></strong>
+                    </div>
+
+                    <div class="chart-caption">
+                        <span>Pendapatan Tertinggi</span>
+                        <strong id="peak-value"></strong>
+                    </div>
+
+                </article>
+
+                <article class="panel chart-panel">
+
+                    <h2>Stok Penjualan</h2>
+
+                    <div class="donut"
+                         id="donut"
+                         role="img"
+                         aria-label="Grafik stok"></div>
+
+                    <div class="chart-caption">
+                        <span>Persiapan Awal</span>
+                        <strong id="stock-in"></strong>
+                    </div>
+
+                    <div class="chart-caption">
+                        <span>Terjual</span>
+                        <strong id="stock-sold"></strong>
+                    </div>
+
+                    <div class="chart-caption">
+                        <span>Belum Terjual</span>
+                        <strong id="stock-left"></strong>
+                    </div>
+
+                </article>
+            </div>
+
+            <h2 class="section-title">Histori Penjualan</h2>
+
+            <div class="panel table-panel">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Makanan</th>
+                                <th>Harga</th>
+                                <th>Terjual</th>
+                                <th>Sisa</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-history"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="history-pagination"></div>
+            </div>
+
+        </section>
+
+        <!-- HALAMAN VOUCHER -->
+        <section id="page-voucher" class="page" hidden>
+
+            <div class="stats three" id="voucher-stats"></div>
+
+            <div class="section-heading">
+                <h2>Daftar Voucher Aktif</h2>
+
+                <button class="secondary" id="validate-voucher">
+                    Validasi Voucher
+                </button>
+            </div>
+
+            <div class="voucher-grid" id="voucher-grid"></div>
+
+        </section>
+    </main>
+</div>
+
+<!-- POPUP -->
+<dialog id="modal">
+    <form method="dialog" class="dialog-inner">
+
+        <div class="section-heading">
+            <h2 id="modal-title"></h2>
+            <button value="cancel"
+                    class="close"
+                    aria-label="Tutup">×</button>
+        </div>
+
+        <div id="modal-body"></div>
+
+        <div class="dialog-actions">
+            <button value="cancel"
+                    class="secondary"
+                    id="modal-cancel">Tutup</button>
+
+            <button type="button"
+                    class="primary"
+                    id="modal-confirm"
+                    hidden>Konfirmasi</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- NOTIFIKASI -->
+<div id="toast"
+     class="toast"
+     role="status"
+     aria-live="polite"
+     hidden>
+</div>
+
+</body>
+</html>
