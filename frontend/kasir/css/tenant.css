@@ -1,0 +1,997 @@
+/* =========================================
+   TENANT PAGE
+========================================= */
+
+.tenant-page {
+    --sidebar: 235px;
+
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+
+    background:
+        radial-gradient(
+            ellipse at top right,
+            #e5f5c5,
+            transparent 45%
+        ),
+        #f3f9e5;
+
+    color: #123d30;
+    min-height: 100vh;
+}
+
+.tenant-page .workspace {
+    width: auto;
+    max-width: none;
+    margin-left: var(--sidebar);
+    min-height: 100vh;
+    padding: 28px 30px;
+}
+
+.tenant-page .sidebar {
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    width: var(--sidebar);
+    height: 100dvh;
+    inset: 0 auto 0 0;
+    z-index: 10;
+}
+
+.tenant-page .brand-logo {
+    display: block;
+    width: 100%;
+    max-width: 210px;
+    height: auto;
+    object-fit: contain;
+}
+
+.tenant-page .topbar {
+    margin-bottom: 26px;
+}
+
+.tenant-page h1 {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.tenant-page h2 {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.tenant-page button,
+.tenant-page input {
+    font-family: inherit;
+}
+
+.tenant-page [data-icon] svg {
+    width: 21px;
+    height: 21px;
+}
+
+/* =========================================
+   TENANT FILTER
+========================================= */
+
+.tenant-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.tenant-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+}
+
+.tenant-tab {
+    min-width: 90px;
+    padding: 12px 20px;
+
+    border: 1px solid #d5e8b3;
+    border-radius: 11px;
+
+    background: linear-gradient(
+        145deg,
+        #eff9d8,
+        #dcefb6
+    );
+
+    color: #4d742f;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow: 0 3px 0 #d2e5b6;
+
+    transition: 0.25s ease;
+}
+
+.tenant-tab:hover {
+    background: #d3eea4;
+    transform: translateY(-3px);
+}
+
+.tenant-tab.active {
+    background: linear-gradient(
+        135deg,
+        #a8e34c,
+        #83c72d
+    );
+
+    color: #244e23;
+    border-color: #89c936;
+
+    box-shadow:
+        0 4px 0 #6ba329,
+        0 7px 14px #8bbd3c30;
+}
+
+.tenant-tab:active {
+    transform: translateY(2px);
+}
+
+.tenant-date {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 11px 15px;
+    border: 1px solid #dfead4;
+    border-radius: 11px;
+
+    background: #ffffff;
+    color: #125e43;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    box-shadow: 0 3px 0 #dce8d1;
+}
+
+/* =========================================
+   TENANT HEADING
+========================================= */
+
+.tenant-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.tenant-heading h2 {
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.tenant-heading p {
+    margin-top: 5px;
+    color: #71816d;
+    font-size: 14px;
+}
+
+.tenant-period {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #5e813d;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tenant-period i {
+    width: 9px;
+    height: 9px;
+
+    background: #85bd3e;
+    border-radius: 50%;
+
+    animation: pulse 2s infinite;
+}
+
+/* =========================================
+   STATISTIC CARDS
+========================================= */
+
+.tenant-page .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+    margin-bottom: 27px;
+}
+
+.tenant-page .stat-card {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 145px;
+    padding: 18px;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff 55%,
+        #f4fae8
+    );
+
+    border: 1px solid #dfead7;
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 0 #dce7d0,
+        0 10px 22px #173e2310;
+
+    animation: tenantEntrance 0.45s both;
+    animation-delay: calc(var(--i) * 70ms);
+
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.tenant-page .stat-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 6px 0 #cadfb6,
+        0 15px 26px #173e2318;
+}
+
+.tenant-page .stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #47654d;
+}
+
+.tenant-page .stat-value {
+    display: block;
+
+    font-size: clamp(21px, 1.9vw, 31px);
+    font-weight: 700;
+
+    color: #104f39;
+    letter-spacing: -0.8px;
+    white-space: nowrap;
+}
+
+.tenant-page .stat-meta {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.tenant-page .stat-icon {
+    display: grid;
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 11px;
+    background: linear-gradient(
+        135deg,
+        #e7f8c6,
+        #cce99a
+    );
+
+    color: #407a32;
+}
+
+.tenant-page .stat-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+/* =========================================
+   CHART LAYOUT
+========================================= */
+
+.tenant-charts {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.15fr)
+        minmax(0, 1fr);
+
+    align-items: stretch;
+
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.chart-card {
+    min-width: 0;
+
+    padding: 22px;
+
+    background: #ffffff;
+    border: 1px solid #dfead7;
+    border-radius: 20px;
+
+    box-shadow:
+        0 5px 0 #dce7d0,
+        0 10px 24px #173e2310;
+
+    animation: tenantEntrance 0.5s 0.15s both;
+}
+
+.chart-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.chart-heading h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+.chart-heading p {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #82917a;
+}
+
+.period-pill {
+    display: inline-flex;
+
+    padding: 7px 11px;
+
+    background: #e5f5c5;
+    color: #4d742f;
+
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 8px;
+
+    white-space: nowrap;
+}
+
+/* =========================================
+   REVENUE CHART
+========================================= */
+
+.chart-revenue {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    margin: 17px 0 10px;
+}
+
+.chart-revenue strong {
+    font-size: 25px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+.chart-revenue > span {
+    font-size: 12px;
+    color: #82917a;
+}
+
+.revenue-chart {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+
+    align-items: end;
+    gap: 10px;
+
+    padding: 10px 0;
+}
+
+.chart-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-width: 0;
+    gap: 7px;
+}
+
+.chart-bar-track {
+    position: relative;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    width: 100%;
+    height: 145px;
+
+    background:
+        repeating-linear-gradient(
+            to top,
+            #edf1e8 0,
+            #edf1e8 1px,
+            transparent 1px,
+            transparent 36px
+        );
+
+    border-bottom: 1px solid #dce8d1;
+}
+
+.chart-bar {
+    width: 62%;
+    max-width: 55px;
+
+    height: var(--height);
+    min-height: 3px;
+
+    background: linear-gradient(
+        to top,
+        #89c63f,
+        #c9ef9b
+    );
+
+    border-radius: 7px 7px 2px 2px;
+
+    box-shadow: 0 3px 8px #83b73e20;
+
+    transform-origin: bottom;
+    animation: growBar 0.65s both;
+
+    transition: filter 0.2s;
+}
+
+.chart-bar.peak {
+    background: linear-gradient(
+        to top,
+        #125e43,
+        #52a66b
+    );
+}
+
+.chart-bar:hover {
+    filter: brightness(1.07);
+}
+
+.chart-bar.zero {
+    background: #e0e9d9;
+    box-shadow: none;
+}
+
+.chart-bar-value {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4d742f;
+    white-space: nowrap;
+}
+
+.chart-time {
+    font-size: 11px;
+    font-weight: 500;
+    color: #74836e;
+
+    white-space: nowrap;
+}
+
+.chart-summary {
+    padding-top: 14px;
+    margin-top: 10px;
+
+    border-top: 1px dashed #dce8d1;
+}
+
+.chart-summary > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+    padding: 6px 0;
+
+    font-size: 14px;
+}
+
+.chart-summary span {
+    color: #71816d;
+}
+
+.chart-summary strong {
+    font-weight: 600;
+    color: #125e43;
+}
+
+/* =========================================
+   DONUT CHART
+========================================= */
+
+.stock-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.donut-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 1;
+
+    padding: 22px 0;
+}
+
+.donut {
+    --percent: 0%;
+
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    width: 205px;
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    background: conic-gradient(
+        #125e43 0 var(--percent),
+        #dce8d1 var(--percent) 100%
+    );
+
+    box-shadow:
+        0 8px 18px #125e4310,
+        inset 0 0 0 1px #125e4308;
+
+    animation: donutEntrance 0.7s ease both;
+}
+
+.donut-center {
+    position: absolute;
+    inset: 24%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    background: #ffffff;
+    border-radius: 50%;
+
+    box-shadow: inset 0 2px 6px #125e4308;
+}
+
+.donut-center strong {
+    font-size: 34px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+.donut-center span {
+    font-size: 12px;
+    color: #71816d;
+}
+
+.stock-summary {
+    display: grid;
+    gap: 12px;
+
+    padding: 8px 0 2px;
+}
+
+.stock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    font-size: 14px;
+}
+
+.stock-row span {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #71816d;
+}
+
+.stock-row strong {
+    font-size: 16px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+.legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 4px;
+}
+
+.legend-dot.initial {
+    background: #93c957;
+}
+
+.legend-dot.sold-stock {
+    background: #125e43;
+}
+
+.legend-dot.remaining {
+    background: #dce8d1;
+}
+
+/* =========================================
+   SALES HISTORY TABLE
+========================================= */
+
+.tenant-page .section-head {
+    margin-bottom: 16px;
+}
+
+.tenant-page .section-head h2 {
+    font-size: 25px;
+}
+
+.tenant-page .section-head p {
+    font-size: 14px;
+}
+
+.tenant-page .table-card {
+    padding: 13px 15px 7px;
+    border-radius: 19px;
+}
+
+.tenant-page thead th {
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tenant-page tbody td {
+    padding: 12px 16px;
+    font-size: 14px;
+}
+
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.product-thumbnail {
+    width: 47px;
+    height: 47px;
+
+    border-radius: 10px;
+    object-fit: cover;
+
+    background: #eaf3d8;
+}
+
+.sales-stock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 42px;
+    padding: 5px 10px;
+
+    background: #edf6db;
+    color: #527831;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    border-radius: 7px;
+}
+
+.sales-stock.low {
+    background: #fff0d7;
+    color: #ae762d;
+}
+
+.sales-stock.empty-stock {
+    background: #ffe8e3;
+    color: #bb5546;
+}
+
+.tenant-page .detail-btn {
+    padding: 9px 13px;
+    font-size: 13px;
+}
+
+.tenant-page .table-footer {
+    font-size: 13px;
+    min-height: 45px;
+}
+
+/* =========================================
+   MODAL DETAIL
+========================================= */
+
+.tenant-modal {
+    width: min(500px, 92vw);
+    padding: 25px;
+
+    border-radius: 22px;
+    max-height: 85vh;
+}
+
+.tenant-modal[open] {
+    animation: donutEntrance 0.3s both;
+}
+
+.modal-food {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding-bottom: 16px;
+}
+
+.modal-food img {
+    width: 85px;
+    height: 85px;
+
+    border-radius: 13px;
+    object-fit: cover;
+}
+
+.modal-food h3 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.modal-food p {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #71816d;
+}
+
+.tenant-error {
+    margin-bottom: 18px;
+    padding: 13px 15px;
+
+    background: #fff0e2;
+    color: #a46536;
+
+    border: 1px solid #eed6b7;
+    border-radius: 11px;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes tenantEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes growBar {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes donutEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* =========================================
+   LARGE DESKTOP
+========================================= */
+
+@media (min-width: 1600px) {
+
+    .tenant-page {
+        --sidebar: 250px;
+    }
+
+    .tenant-page .workspace {
+        padding: 30px 36px;
+    }
+
+    .tenant-page .stat-card {
+        min-height: 165px;
+        padding: 22px;
+    }
+
+    .tenant-page .stat-value {
+        font-size: 32px;
+    }
+
+    .chart-card {
+        padding: 26px;
+    }
+
+    .chart-bar-track {
+        height: 175px;
+    }
+
+    .donut {
+        width: 235px;
+    }
+}
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1350px) {
+
+    .tenant-page .stat-card {
+        min-height: 130px;
+        padding: 14px;
+    }
+
+    .tenant-page .stat-value {
+        font-size: 22px;
+    }
+
+    .tenant-page .stat-label {
+        font-size: 12px;
+    }
+
+    .tenant-page .stats {
+        gap: 12px;
+    }
+
+    .tenant-charts {
+        gap: 16px;
+    }
+
+    .chart-card {
+        padding: 18px;
+    }
+
+    .tenant-tab {
+        min-width: 75px;
+        padding: 11px 15px;
+    }
+
+    .chart-time,
+    .chart-bar-value {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 1200px) {
+
+    .tenant-page {
+        --sidebar: 200px;
+    }
+
+    .tenant-page .workspace {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 1050px) {
+
+    .tenant-page .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tenant-page .stat-value {
+        font-size: 26px;
+    }
+
+    .tenant-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 720px) {
+
+    .tenant-page {
+        --sidebar: 68px;
+    }
+
+    .tenant-page .sidebar {
+        padding: 16px 7px;
+    }
+
+    .tenant-page .workspace {
+        padding: 17px 13px;
+    }
+
+    .tenant-page .brand-logo {
+        width: 100%;
+    }
+
+    .tenant-page h1 {
+        font-size: 28px;
+    }
+
+    .tenant-heading {
+        flex-wrap: wrap;
+    }
+
+    .tenant-page .stat-value {
+        font-size: clamp(14px, 3.2vw, 22px);
+    }
+
+    .tenant-page .stat-card {
+        padding: 10px;
+        min-height: 115px;
+    }
+
+    .tenant-page .stat-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .tenant-page .stat-label {
+        font-size: 11px;
+    }
+
+    .tenant-page .stat-meta {
+        font-size: 10px;
+    }
+
+    .chart-heading {
+        flex-wrap: wrap;
+    }
+
+    .chart-summary > div {
+        font-size: 12px;
+    }
+
+    .chart-bar-value {
+        font-size: 9px;
+    }
+
+    .revenue-chart {
+        gap: 4px;
+    }
+
+    .chart-time {
+        font-size: 8px;
+    }
+
+    .donut {
+        width: 180px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tenant-page *,
+    .tenant-page *::before,
+    .tenant-page *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

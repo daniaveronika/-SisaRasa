@@ -470,6 +470,311 @@ function checkout(input) {
    REST API TRANSAKSI
 ========================================= */
 
+/* =========================================
+   TENANT BACKEND
+========================================= */
+
+function getTenantOverview() {
+
+    const data = getData();
+
+    /* DATE CONFIGURATION */
+
+    const dateFormatter = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone: "Asia/Jakarta",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    );
+
+    function dateKey(value) {
+
+        const parts = Object.fromEntries(
+
+            dateFormatter.formatToParts(
+                new Date(value)
+            ).map(part => [
+                part.type,
+                part.value
+            ])
+
+        );
+
+        return `${parts.year}-${parts.month}-${parts.day}`;
+
+    }
+
+    const today = dateKey(new Date());
+
+    const hourFormatter = new Intl.DateTimeFormat(
+        "en-GB",
+        {
+            timeZone: "Asia/Jakarta",
+            hour: "2-digit",
+            hourCycle: "h23"
+        }
+    );
+
+    /* =========================================
+       PREPARE TENANT DATA
+    ========================================= */
+
+    const summaries = data.tenants.map(tenant => ({
+
+        id: tenant.id,
+
+        name: tenant.name,
+
+        revenue: 0,
+
+        transactions: 0,
+
+        soldToday: 0,
+
+        soldAllTime: 0,
+
+        initialStock: 0,
+
+        remainingStock: 0,
+
+        revenueChart: [
+
+            { label: "00–04", value: 0 },
+
+            { label: "04–08", value: 0 },
+
+            { label: "08–12", value: 0 },
+
+            { label: "12–16", value: 0 },
+
+            { label: "16–20", value: 0 },
+
+            { label: "20–24", value: 0 }
+
+        ],
+
+        products: []
+
+    }));
+
+    const tenantMap = new Map(
+
+        summaries.map(tenant => [
+
+            tenant.id,
+
+            tenant
+
+        ])
+
+    );
+
+    const productMap = new Map();
+
+    /* =========================================
+       CALCULATE STOCK
+    ========================================= */
+
+    for (const product of data.products) {
+
+        const tenant = tenantMap.get(
+
+            product.tenantId
+
+        );
+
+        if (!tenant) continue;
+
+        const masterProduct = products.find(
+
+            item => item.id === product.id
+
+        );
+
+        const initialStock = masterProduct
+
+            ? masterProduct.stock
+
+            : product.stock;
+
+        const soldAllTime = Math.max(
+
+            0,
+
+            initialStock - product.stock
+
+        );
+
+        const item = {
+
+            ...product,
+
+            initialStock,
+
+            soldAllTime,
+
+            soldToday: 0,
+
+            transactions: 0,
+
+            revenue: 0
+
+        };
+
+        tenant.products.push(item);
+
+        tenant.initialStock += initialStock;
+
+        tenant.remainingStock += product.stock;
+
+        tenant.soldAllTime += soldAllTime;
+
+        productMap.set(product.id, item);
+
+    }
+
+    /* =========================================
+       CALCULATE TODAY'S TRANSACTIONS
+    ========================================= */
+
+    const todayOrders = data.orders.filter(
+
+        order => dateKey(order.createdAt) === today
+
+    );
+
+    for (const order of todayOrders) {
+
+        if (order.subtotal <= 0) continue;
+
+        const hour = Number(
+
+            hourFormatter.format(
+                new Date(order.createdAt)
+            )
+
+        );
+
+        const chartIndex = Math.min(
+
+            5,
+
+            Math.floor(hour / 4)
+
+        );
+
+        const countedTenants = new Set();
+
+        const countedProducts = new Set();
+
+        let cumulativeGross = 0;
+
+        let previousAllocated = 0;
+
+        for (const item of order.items) {
+
+            /* Calculate net revenue after discount */
+
+            cumulativeGross += item.total;
+
+            const allocatedRevenue = Math.round(
+
+                order.total *
+                cumulativeGross /
+                order.subtotal
+
+            );
+
+            const netRevenue =
+                allocatedRevenue - previousAllocated;
+
+            previousAllocated = allocatedRevenue;
+
+            const tenant = tenantMap.get(
+
+                item.tenantId
+
+            );
+
+            const product = productMap.get(
+
+                item.id
+
+            );
+
+            if (!tenant || !product) continue;
+
+            /* Tenant statistics */
+
+            tenant.revenue += netRevenue;
+
+            tenant.soldToday += item.quantity;
+
+            tenant.revenueChart[
+                chartIndex
+            ].value += netRevenue;
+
+            /* Product statistics */
+
+            product.soldToday += item.quantity;
+
+            product.revenue += netRevenue;
+
+            /* Count each transaction once */
+
+            if (!countedTenants.has(tenant.id)) {
+
+                tenant.transactions++;
+
+                countedTenants.add(tenant.id);
+
+            }
+
+            if (!countedProducts.has(product.id)) {
+
+                product.transactions++;
+
+                countedProducts.add(product.id);
+
+            }
+
+        }
+
+    }
+
+    /* SORT PRODUCTS */
+
+    for (const tenant of summaries) {
+
+        tenant.products.sort(
+
+            (a, b) =>
+
+                b.soldToday - a.soldToday ||
+
+                a.name.localeCompare(b.name)
+
+        );
+
+    }
+
+    return {
+
+        date: today,
+
+        tenants: summaries
+
+    };
+
+}
+
+/* =========================================
+   REST API TRANSAKSI & TENANT
+========================================= */
+
 async function handleTransaksi(request, response) {
 
     const url = new URL(
@@ -480,7 +785,13 @@ async function handleTransaksi(request, response) {
 
     );
 
-    if (url.pathname !== "/api/kasir/transaksi") {
+    const isTransaksi =
+        url.pathname === "/api/kasir/transaksi";
+
+    const isTenant =
+        url.pathname === "/api/kasir/tenant";
+
+    if (!isTransaksi && !isTenant) {
 
         return false;
 
@@ -488,15 +799,55 @@ async function handleTransaksi(request, response) {
 
     try {
 
-        /* GET DATA MENU */
+        /* =====================================
+           API TENANT
+        ===================================== */
 
-        if (request.method === "GET") {
+        if (isTenant) {
 
-            json(response, 200, getData());
+            if (request.method !== "GET") {
+
+                json(response, 405, {
+
+                    message: "Metode tidak diizinkan."
+
+                });
+
+                return true;
+
+            }
+
+            json(
+
+                response,
+
+                200,
+
+                getTenantOverview()
+
+            );
+
+            return true;
 
         }
 
-        /* POST CHECKOUT */
+        /* =====================================
+           API TRANSAKSI
+        ===================================== */
+
+        if (request.method === "GET") {
+
+            json(
+
+                response,
+
+                200,
+
+                getData()
+
+            );
+
+        }
 
         else if (request.method === "POST") {
 
@@ -513,8 +864,6 @@ async function handleTransaksi(request, response) {
             );
 
         }
-
-        /* METHOD NOT ALLOWED */
 
         else {
 
