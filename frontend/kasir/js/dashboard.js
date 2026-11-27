@@ -689,3 +689,699 @@ $("year").textContent = today.getFullYear();
 
 renderStats();
 load();
+/* =========================================
+   INTERACTIVE DASHBOARD STATISTICS
+========================================= */
+
+(() => {
+
+    const statsContainer =
+        document.getElementById("stats");
+
+    if (!statsContainer) return;
+
+    /* =====================================
+       CREATE POPUP
+    ===================================== */
+
+    const modal = document.createElement("dialog");
+
+    modal.className = "metric-modal";
+    modal.id = "metric-modal";
+
+    modal.setAttribute(
+        "aria-labelledby",
+        "metric-title"
+    );
+
+    modal.innerHTML = `
+
+        <div class="metric-modal-header">
+
+            <h2 id="metric-title">
+                Rincian Dashboard
+            </h2>
+
+            <button
+                class="metric-close"
+                id="metric-close"
+                aria-label="Tutup popup"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div id="metric-content"></div>
+
+    `;
+
+    document.body.appendChild(modal);
+
+    const title =
+        document.getElementById("metric-title");
+
+    const content =
+        document.getElementById("metric-content");
+
+    let requestVersion = 0;
+
+    const currency = value =>
+        "Rp " + Number(value || 0)
+            .toLocaleString("id-ID");
+
+    const formatNumber = value =>
+        Number(value || 0)
+            .toLocaleString("id-ID");
+
+    const safe = value =>
+        String(value ?? "").replace(
+            /[&<>"']/g,
+            character => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[character]
+        );
+
+    /* =====================================
+       CLOSE POPUP
+    ===================================== */
+
+    document
+        .getElementById("metric-close")
+        .addEventListener("click", () => {
+
+            modal.close();
+
+        });
+
+    modal.addEventListener("click", event => {
+
+        if (event.target === modal) {
+
+            modal.close();
+
+        }
+
+    });
+
+    modal.addEventListener("close", () => {
+
+        requestVersion++;
+
+    });
+
+    /* =====================================
+       HELPER COMPONENTS
+    ===================================== */
+
+    function hero(label, value) {
+
+        return `
+
+            <div class="metric-hero">
+
+                <p>${safe(label)}</p>
+
+                <strong>${safe(value)}</strong>
+
+            </div>
+
+        `;
+
+    }
+
+    function navigation(label, url) {
+
+        return `
+
+            <a class="metric-link"
+               href="${safe(url)}">
+
+                ${safe(label)}
+
+                <span>→</span>
+
+            </a>
+
+        `;
+
+    }
+
+    function demoNote() {
+
+        return data.demo
+
+            ? `
+                <p class="metric-note">
+                    Rincian ini menggunakan data
+                    demonstrasi Dashboard.
+                </p>
+              `
+
+            : "";
+
+    }
+
+    /* =====================================
+       TENANT BREAKDOWN
+    ===================================== */
+
+    function tenantBreakdown(key, isCurrency) {
+
+        const tenants = [...data.tenants].sort(
+
+            (a, b) =>
+                Number(b[key] || 0) -
+                Number(a[key] || 0)
+
+        );
+
+        const highest = Math.max(
+
+            1,
+
+            ...tenants.map(
+                tenant => Number(tenant[key] || 0)
+            )
+
+        );
+
+        return `
+
+            <div class="metric-list">
+
+                ${tenants.map(tenant => {
+
+                    const value =
+                        Number(tenant[key] || 0);
+
+                    const percentage =
+                        Math.max(
+                            0,
+                            Math.min(
+                                100,
+                                value / highest * 100
+                            )
+                        );
+
+                    return `
+
+                        <div class="metric-row">
+
+                            <div class="metric-row-head">
+
+                                <span>
+                                    ${safe(tenant.name)}
+                                </span>
+
+                                <strong>
+
+                                    ${
+                                        isCurrency
+
+                                        ? currency(value)
+
+                                        : formatNumber(value) +
+                                          " transaksi"
+                                    }
+
+                                </strong>
+
+                            </div>
+
+                            <div class="metric-track">
+
+                                <div
+                                    class="metric-fill"
+                                    style="width:${percentage}%"
+                                >
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }).join("")}
+
+            </div>
+
+        `;
+
+    }
+
+    /* =====================================
+       CARD 1 - TOTAL TRANSAKSI
+    ===================================== */
+
+    function showTransactions() {
+
+        title.textContent = "Rincian Transaksi";
+
+        content.innerHTML = `
+
+            ${hero(
+                "Total Transaksi Hari Ini",
+                formatNumber(
+                    data.summary.transactions
+                ) + " Transaksi"
+            )}
+
+            <h3>Transaksi Berdasarkan Tenant</h3>
+
+            ${tenantBreakdown("transactions", false)}
+
+            ${demoNote()}
+
+            ${navigation(
+                "Lihat Riwayat Transaksi",
+                "/transaksi?view=history&filter=today"
+            )}
+
+        `;
+
+    }
+
+    /* =====================================
+       CARD 2 - TOTAL PENDAPATAN
+    ===================================== */
+
+    function showRevenue() {
+
+        title.textContent = "Rincian Pendapatan";
+
+        const revenue =
+            Number(data.summary.revenue || 0);
+
+        const normal =
+            Number(data.summary.normalRevenue || 0);
+
+        const otherRevenue = revenue - normal;
+
+        content.innerHTML = `
+
+            ${hero(
+                "Total Pendapatan Hari Ini",
+                currency(revenue)
+            )}
+
+            <div class="metric-breakdown">
+
+                <div class="metric-mini">
+
+                    <span>Penjualan Normal</span>
+
+                    <strong>
+                        ${currency(normal)}
+                    </strong>
+
+                </div>
+
+                <div class="metric-mini">
+
+                    <span>Selisih Pendapatan</span>
+
+                    <strong>
+                        ${currency(otherRevenue)}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <h3>Pendapatan Setiap Tenant</h3>
+
+            ${tenantBreakdown("revenue", true)}
+
+            ${demoNote()}
+
+            ${navigation(
+                "Lihat Statistik Tenant",
+                "/tenant"
+            )}
+
+        `;
+
+    }
+
+    /* =====================================
+       CARD 3 - PENJUALAN NORMAL
+    ===================================== */
+
+    function showNormalSales() {
+
+        title.textContent = "Penjualan Normal";
+
+        content.innerHTML = `
+
+            ${hero(
+                "Pendapatan Tanpa Voucher",
+                currency(
+                    data.summary.normalRevenue
+                )
+            )}
+
+            <h3>Penjualan Normal Setiap Tenant</h3>
+
+            ${tenantBreakdown("normalRevenue", true)}
+
+            ${demoNote()}
+
+            ${navigation(
+                "Lihat Transaksi Tanpa Voucher",
+                "/transaksi?view=history&filter=normal"
+            )}
+
+        `;
+
+    }
+
+    /* =====================================
+       CARD 4 - VOUCHER
+    ===================================== */
+
+    async function showVouchers(version) {
+
+        title.textContent = "Rincian Voucher";
+
+        content.innerHTML = `
+
+            ${hero(
+                "Total Voucher pada Dashboard",
+                formatNumber(
+                    data.summary.activeVouchers
+                )
+            )}
+
+            <p class="metric-note">
+
+                Memuat daftar voucher tersedia...
+
+            </p>
+
+            ${navigation(
+                "Lihat Semua Voucher",
+                "/voucher"
+            )}
+
+        `;
+
+        try {
+
+            const response = await fetch(
+                "/api/kasir/voucher",
+                { cache: "no-store" }
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "API Voucher gagal dimuat."
+                );
+
+            }
+
+            const result = await response.json();
+
+            if (
+                version !== requestVersion ||
+                !modal.open
+            ) return;
+
+            const activeVouchers =
+                result.vouchers.filter(
+
+                    voucher =>
+                        voucher.status === "active"
+
+                );
+
+            content.innerHTML = `
+
+                ${hero(
+                    "Voucher Aktif Saat Ini",
+                    formatNumber(
+                        result.summary.activeVouchers
+                    ) + " Voucher"
+                )}
+
+                <div class="metric-breakdown">
+
+                    <div class="metric-mini">
+
+                        <span>Total Digunakan</span>
+
+                        <strong>
+                            ${formatNumber(
+                                result.summary.totalUsed
+                            )}
+                        </strong>
+
+                    </div>
+
+                    <div class="metric-mini">
+
+                        <span>Kuota Tersisa</span>
+
+                        <strong>
+                            ${formatNumber(
+                                result.summary.remainingQuota
+                            )}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <h3>Daftar Voucher Aktif</h3>
+
+                ${activeVouchers.map(voucher => `
+
+                    <div class="metric-voucher-row">
+
+                        <div>
+
+                            <strong>
+                                ${safe(voucher.name)}
+                            </strong>
+
+                            <small>
+
+                                ${safe(voucher.code)}
+
+                                • Sisa
+                                ${formatNumber(
+                                    voucher.remaining
+                                )} kuota
+
+                            </small>
+
+                        </div>
+
+                        <span class="metric-discount">
+
+                            ${safe(voucher.percent)}% OFF
+
+                        </span>
+
+                    </div>
+
+                `).join("") || `
+                    <p class="metric-note">
+                        Tidak ada voucher aktif.
+                    </p>
+                `}
+
+                ${data.demo ? `
+                    <p class="metric-note">
+                        Angka Dashboard masih berupa
+                        data demonstrasi. Daftar ini
+                        menggunakan data API Voucher.
+                    </p>
+                ` : ""}
+
+                <div style="margin-top:20px">
+
+                    ${navigation(
+                        "Buka Halaman Voucher",
+                        "/voucher"
+                    )}
+
+                </div>
+
+            `;
+
+        } catch (error) {
+
+            if (
+                version !== requestVersion ||
+                !modal.open
+            ) return;
+
+            content.innerHTML = `
+
+                ${hero(
+                    "Total Voucher pada Dashboard",
+                    formatNumber(
+                        data.summary.activeVouchers
+                    )
+                )}
+
+                <p class="metric-note">
+
+                    Daftar voucher gagal dimuat.
+                    Pastikan API Voucher berjalan.
+
+                </p>
+
+                ${demoNote()}
+
+                ${navigation(
+                    "Buka Halaman Voucher",
+                    "/voucher"
+                )}
+
+            `;
+
+        }
+
+    }
+
+    /* =====================================
+       OPEN DETAIL BASED ON CARD
+    ===================================== */
+
+    function openMetric(index) {
+
+        if (
+            typeof data === "undefined" ||
+            !data
+        ) return;
+
+        const version = ++requestVersion;
+
+        if (index === 0) {
+
+            showTransactions();
+
+        } else if (index === 1) {
+
+            showRevenue();
+
+        } else if (index === 2) {
+
+            showNormalSales();
+
+        } else if (index === 3) {
+
+            showVouchers(version);
+
+        } else {
+
+            return;
+
+        }
+
+        if (!modal.open) {
+
+            modal.showModal();
+
+        }
+
+    }
+
+    /* =====================================
+       MAKE ALL CARDS CLICKABLE
+    ===================================== */
+
+    function activateCards() {
+
+        const cards =
+            statsContainer.querySelectorAll(
+                ".stat-card"
+            );
+
+        cards.forEach((card, index) => {
+
+            card.setAttribute("role", "button");
+
+            card.setAttribute("tabindex", "0");
+
+            card.setAttribute(
+                "aria-haspopup",
+                "dialog"
+            );
+
+            card.dataset.metricIndex = index;
+
+            card.title = "Klik untuk melihat rincian";
+
+        });
+
+    }
+
+    /* CLICK EVENT */
+
+    statsContainer.addEventListener(
+        "click",
+        event => {
+
+            const card = event.target.closest(
+                "[data-metric-index]"
+            );
+
+            if (!card) return;
+
+            openMetric(
+                Number(card.dataset.metricIndex)
+            );
+
+        }
+    );
+
+    /* KEYBOARD ACCESSIBILITY */
+
+    statsContainer.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key !== "Enter" &&
+                event.key !== " "
+            ) return;
+
+            const card = event.target.closest(
+                "[data-metric-index]"
+            );
+
+            if (!card) return;
+
+            event.preventDefault();
+
+            openMetric(
+                Number(card.dataset.metricIndex)
+            );
+
+        }
+    );
+
+    /* =====================================
+       KEEP CARDS INTERACTIVE AFTER REFRESH
+    ===================================== */
+
+    const observer = new MutationObserver(
+        activateCards
+    );
+
+    observer.observe(statsContainer, {
+        childList: true
+    });
+
+    activateCards();
+
+})();

@@ -2144,3 +2144,399 @@ tbody tr:hover td {
         transition: none;
     }
 }
+/* =========================================
+   INTERACTIVE DASHBOARD CARDS
+========================================= */
+
+.stat-card[role="button"] {
+    cursor: pointer;
+
+    transition:
+        translate 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.stat-card[role="button"]:hover {
+    translate: 0 -6px;
+
+    border-color: #a1cb68;
+
+    box-shadow:
+        0 6px 0 #c9dfb3,
+        0 15px 30px #125e4320;
+}
+
+.stat-card[role="button"]:active {
+    translate: 0 2px;
+}
+
+.stat-card[role="button"]:focus-visible {
+    outline: 3px solid #8ac639;
+    outline-offset: 4px;
+}
+
+.stat-card[role="button"] .stat-icon {
+    transition: transform 0.3s ease;
+}
+
+.stat-card[role="button"]:hover .stat-icon {
+    transform: rotate(-8deg) scale(1.12);
+}
+
+.stat-card[role="button"] .stat-meta::after {
+    content: "↗";
+
+    margin-left: auto;
+
+    color: #125e43;
+    font-size: 18px;
+    font-weight: 700;
+
+    transition: translate 0.3s ease;
+}
+
+.stat-card[role="button"]:hover .stat-meta::after {
+    translate: 3px -3px;
+}
+
+/* =========================================
+   STATISTIC DETAIL POPUP
+========================================= */
+
+.metric-modal {
+    width: min(650px, 92vw);
+    max-height: 88vh;
+    overflow-y: auto;
+
+    padding: 28px;
+
+    background: #ffffff;
+    color: #123d30;
+
+    border: 1px solid #dfead7;
+    border-radius: 24px;
+
+    box-shadow: 0 25px 80px #0b422e40;
+
+    font-family: "Montserrat", sans-serif;
+}
+
+.metric-modal[open] {
+    animation: metricEntrance 0.3s ease both;
+}
+
+.metric-modal::backdrop {
+    background: rgba(12, 53, 37, 0.48);
+    backdrop-filter: blur(5px);
+}
+
+.metric-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.metric-modal-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+.metric-close {
+    width: 38px;
+    height: 38px;
+
+    background: #edf5e4;
+    color: #125e43;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 25px;
+
+    transition: 0.2s ease;
+}
+
+.metric-close:hover {
+    background: #dcefc3;
+    transform: rotate(8deg);
+}
+
+/* =========================================
+   POPUP SUMMARY
+========================================= */
+
+.metric-hero {
+    padding: 23px;
+    margin-bottom: 22px;
+
+    background: linear-gradient(
+        135deg,
+        #f1f9df,
+        #d7eead
+    );
+
+    border: 1px solid #d6e8bb;
+    border-radius: 17px;
+
+    box-shadow: 0 4px 0 #dce8ce;
+}
+
+.metric-hero p {
+    color: #58774b;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.metric-hero strong {
+    display: block;
+
+    font-size: clamp(25px, 3vw, 36px);
+    font-weight: 700;
+    color: #125e43;
+
+    letter-spacing: -1px;
+}
+
+.metric-modal h3 {
+    font-size: 17px;
+    font-weight: 700;
+
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   TENANT BREAKDOWN
+========================================= */
+
+.metric-list {
+    display: grid;
+    gap: 17px;
+
+    margin-bottom: 22px;
+}
+
+.metric-row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+}
+
+.metric-row-head strong {
+    color: #125e43;
+    font-weight: 600;
+}
+
+.metric-track {
+    width: 100%;
+    height: 9px;
+
+    background: #eaf1e2;
+
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.metric-fill {
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #6eae37,
+        #b5e66d
+    );
+
+    border-radius: 10px;
+
+    transform-origin: left;
+    animation: metricGrow 0.7s ease both;
+}
+
+/* =========================================
+   REVENUE BREAKDOWN
+========================================= */
+
+.metric-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    margin-bottom: 24px;
+}
+
+.metric-mini {
+    background: #f4f8ed;
+
+    border: 1px solid #e0ead5;
+    border-radius: 12px;
+
+    padding: 15px;
+}
+
+.metric-mini span {
+    display: block;
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    color: #74836e;
+}
+
+.metric-mini strong {
+    font-size: 17px;
+    color: #125e43;
+}
+
+/* =========================================
+   VOUCHER DETAIL
+========================================= */
+
+.metric-voucher-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #e7eee0;
+}
+
+.metric-voucher-row strong {
+    display: block;
+    font-size: 14px;
+}
+
+.metric-voucher-row small {
+    display: block;
+    margin-top: 4px;
+
+    font-size: 12px;
+    color: #74836e;
+}
+
+.metric-discount {
+    flex-shrink: 0;
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+
+    background: #dcf1b4;
+    color: #426d2c;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.metric-note {
+    padding: 12px;
+
+    margin: 15px 0;
+
+    background: #f5f8ef;
+    color: #687c61;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   POPUP NAVIGATION BUTTON
+========================================= */
+
+.metric-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    padding: 15px 19px;
+
+    background: linear-gradient(
+        135deg,
+        #176849,
+        #104f39
+    );
+
+    color: #ffffff;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow: 0 4px 0 #0b422e;
+
+    transition: 0.25s ease;
+}
+
+.metric-link:hover {
+    translate: 0 -3px;
+    background: #207550;
+}
+
+.metric-link:active {
+    translate: 0 2px;
+}
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes metricEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes metricGrow {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .metric-modal {
+        padding: 20px;
+    }
+
+    .metric-modal-header h2 {
+        font-size: 20px;
+    }
+
+    .metric-breakdown {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .metric-modal,
+    .metric-fill,
+    .stat-card[role="button"] {
+        animation: none !important;
+        transition: none !important;
+    }
+}
