@@ -3,6 +3,7 @@
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const handleTransaksi = require("./transaksi-api");
 
 /* =========================================
    SERVER CONFIGURATION
@@ -201,11 +202,15 @@ const mime = {
 /* =========================================
    CREATE HTTP SERVER
 ========================================= */
-
 const server = http.createServer(
     async (request, response) => {
 
         try {
+
+            // API TRANSAKSI KASIR
+            if (await handleTransaksi(request, response)) {
+                return;
+            }
 
             if (request.method !== "GET") {
 

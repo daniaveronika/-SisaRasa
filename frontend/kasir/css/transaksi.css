@@ -1,0 +1,1673 @@
+/* =========================================
+   TRANSACTION PAGE
+========================================= */
+
+.transaksi-page {
+    font-family: "Montserrat", sans-serif;
+    background:
+        radial-gradient(
+            ellipse at top right,
+            #e5f5c5,
+            transparent 45%
+        ),
+        #f3f9e5;
+}
+
+.transaksi-page .workspace {
+    max-width: none;
+    min-height: 100vh;
+}
+
+.transaksi-page h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.transaksi-page button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================
+   TENANT FILTER
+========================================= */
+
+.tenant-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.tenant-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tenant-tab {
+    min-width: 94px;
+
+    padding: 12px 18px;
+
+    border: 1px solid #d5e8b3;
+    border-radius: 11px;
+
+    background: linear-gradient(
+        145deg,
+        #eff9d8,
+        #dcefb6
+    );
+
+    color: #4d742f;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    box-shadow: 0 3px 0 #d2e5b6;
+
+    transition: all 0.25s ease;
+}
+
+.tenant-tab:hover {
+    transform: translateY(-3px);
+    background: #d3eea4;
+}
+
+.tenant-tab.active {
+    background: linear-gradient(
+        135deg,
+        #a8e34c,
+        #83c72d
+    );
+
+    border-color: #89c936;
+    color: #244e23;
+
+    box-shadow:
+        0 4px 0 #6ba329,
+        0 7px 14px #8bbd3c30;
+}
+
+.tenant-tab:active {
+    transform: translateY(2px);
+}
+
+.history-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 12px 17px;
+
+    background: #ffffff;
+    border: 1px solid #dce8d1;
+    border-radius: 11px;
+
+    color: #125e43;
+    font-size: 12px;
+    font-weight: 600;
+
+    box-shadow: 0 3px 0 #dce8d1;
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+.history-btn:hover {
+    transform: translateY(-3px);
+    background: #f9ffef;
+}
+
+/* =========================================
+   MAIN TRANSACTION LAYOUT
+========================================= */
+
+.transaction-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(320px, 360px);
+
+    align-items: start;
+    gap: 24px;
+}
+
+.catalog {
+    min-width: 0;
+}
+
+.catalog-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 16px;
+}
+
+.catalog-heading p {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #72826c;
+}
+
+.available-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #5f813b;
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.available-label i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8ac739;
+
+    animation: pulse 2s infinite;
+}
+
+/* =========================================
+   FOOD PRODUCT CARDS
+========================================= */
+
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.food-card {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+
+    padding: 11px;
+
+    background: linear-gradient(
+        145deg,
+        #ffffff 65%,
+        #f5faee
+    );
+
+    border: 1px solid #e0ead6;
+    border-radius: 17px;
+
+    box-shadow:
+        0 4px 0 #d6e4c9,
+        0 8px 18px #19482e0c;
+
+    animation: productEntrance 0.4s both;
+    animation-delay: calc(var(--i) * 35ms);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.food-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 5px 0 #c9dfb3,
+        0 12px 24px #19482e16;
+}
+
+.food-card.in-cart {
+    border-color: #8fc94c;
+    background: #fcfff5;
+}
+
+.food-image {
+    position: relative;
+    overflow: hidden;
+
+    width: 100%;
+    aspect-ratio: 16 / 10;
+
+    border-radius: 11px;
+    background: #e9f2d4;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 36px;
+}
+
+.food-image img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.4s ease;
+}
+
+.food-card:hover .food-image img {
+    transform: scale(1.06);
+}
+
+.food-stock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    padding: 5px 8px;
+
+    border-radius: 7px;
+
+    background: #f7ffedee;
+    color: #456f31;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    box-shadow: 0 2px 7px #00000015;
+}
+
+.food-stock.sold-out {
+    background: #fbe6e2;
+    color: #a44936;
+}
+
+.food-info {
+    padding: 11px 3px 10px;
+}
+
+.food-name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #123d30;
+
+    min-height: 42px;
+}
+
+.food-price {
+    margin-top: 3px;
+
+    font-size: 16px;
+    font-weight: 700;
+    color: #125e43;
+}
+
+/* =========================================
+   QUANTITY BUTTONS
+========================================= */
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 3px 2px;
+    border-top: 1px solid #e9efe3;
+}
+
+.quantity-btn {
+    display: grid;
+    place-items: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 9px;
+    border: 1px solid #dce8d2;
+
+    color: #125e43;
+    background: #f0f6e9;
+
+    font-size: 21px;
+    font-weight: 500;
+
+    transition: all 0.2s ease;
+}
+
+.quantity-btn.plus {
+    background: #125e43;
+    color: #ffffff;
+    border-color: #125e43;
+
+    box-shadow: 0 3px 0 #0c402e;
+}
+
+.quantity-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+
+.quantity-btn:not(:disabled):active {
+    transform: scale(0.9);
+    box-shadow: none;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.35;
+}
+
+.quantity-value {
+    min-width: 35px;
+    text-align: center;
+
+    color: #123d30;
+    font-size: 15px;
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   ORDER DETAIL PANEL
+========================================= */
+
+.order-panel {
+    position: sticky;
+    top: 25px;
+
+    min-width: 0;
+
+    padding: 21px;
+
+    background: #ffffff;
+    border: 1px solid #dfe9d8;
+    border-radius: 21px;
+
+    box-shadow:
+        0 5px 0 #d6e3ca,
+        0 12px 30px #19482e12;
+
+    animation: orderEntrance 0.5s both;
+}
+
+.order-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding-bottom: 17px;
+    border-bottom: 1px solid #e7eee1;
+}
+
+.order-heading h2 {
+    font-size: 21px;
+}
+
+.order-heading p {
+    margin-top: 4px;
+    color: #82907b;
+    font-size: 12px;
+}
+
+.clear-btn {
+    border: none;
+    border-radius: 8px;
+
+    background: #fff1ed;
+    color: #cb6255;
+
+    padding: 7px 10px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.clear-btn:hover {
+    background: #fce1db;
+}
+
+/* =========================================
+   CART ITEMS
+========================================= */
+
+.cart-items {
+    max-height: 300px;
+    min-height: 120px;
+
+    overflow-y: auto;
+    padding: 4px 0 12px;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #edf1e8;
+}
+
+.cart-image {
+    width: 58px;
+    height: 58px;
+
+    object-fit: cover;
+    border-radius: 10px;
+    background: #eff6db;
+}
+
+.cart-info {
+    min-width: 0;
+}
+
+.cart-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #123d30;
+}
+
+.cart-tenant {
+    font-size: 10px;
+    color: #84917e;
+    margin-top: 3px;
+}
+
+.cart-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 5px;
+    margin-top: 7px;
+}
+
+.cart-price {
+    font-size: 12px;
+    color: #125e43;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cart-quantity {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cart-quantity button {
+    width: 23px;
+    height: 23px;
+
+    border: 1px solid #dce8d1;
+    border-radius: 6px;
+
+    background: #f1f8e6;
+    color: #125e43;
+
+    font-size: 15px;
+}
+
+.empty-cart {
+    min-height: 155px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    gap: 8px;
+
+    padding: 18px 5px;
+}
+
+.empty-cart-icon {
+    display: grid;
+    place-items: center;
+
+    width: 52px;
+    height: 52px;
+
+    background: #edf7dd;
+    color: #83b64b;
+
+    border-radius: 16px;
+}
+
+.empty-cart-icon svg {
+    width: 27px;
+    height: 27px;
+}
+
+.empty-cart strong {
+    font-size: 13px;
+}
+
+.empty-cart p {
+    font-size: 11px;
+    color: #83907e;
+    line-height: 1.5;
+}
+
+/* =========================================
+   PAYMENT SUMMARY
+========================================= */
+
+.payment-summary {
+    margin-top: 10px;
+    padding-top: 16px;
+
+    border-top: 1px dashed #d9e4d0;
+}
+
+.payment-summary h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.summary-row span {
+    color: #72826e;
+}
+
+.summary-row strong {
+    font-weight: 600;
+    color: #123d30;
+}
+
+/* =========================================
+   VOUCHER INPUT
+========================================= */
+
+.voucher-input {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px;
+
+    background: #f4f9ec;
+    border: 1px solid #dce8d1;
+    border-radius: 10px;
+
+    margin-top: 17px;
+}
+
+.voucher-input > span {
+    color: #79a343;
+}
+
+.voucher-input input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 5px 0;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    font-size: 11px;
+    color: #125e43;
+}
+
+.voucher-input button {
+    padding: 8px 11px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #d5edaf;
+    color: #416b29;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.voucher-input button:hover {
+    background: #bde18c;
+}
+
+.voucher-message {
+    min-height: 16px;
+    margin-top: 6px;
+
+    font-size: 11px;
+    color: #6a963e;
+}
+
+/* =========================================
+   PAYMENT METHOD
+========================================= */
+
+.payment-method {
+    margin-top: 13px;
+}
+
+.payment-method h4 {
+    margin: 0 0 10px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 12px 8px;
+
+    border: 1px solid #dfe9d7;
+    border-radius: 10px;
+
+    color: #61775c;
+    background: #f6f9f2;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.payment-option.selected {
+    color: #125e43;
+    background: #e6f5cc;
+    border-color: #9cc96b;
+
+    box-shadow: 0 3px 0 #d2e5ba;
+}
+
+.payment-option:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   TOTAL AND CHECKOUT
+========================================= */
+
+.total-payment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7px;
+
+    margin-top: 22px;
+    padding: 19px 0 17px;
+
+    border-top: 1px dashed #d9e4d0;
+}
+
+.total-payment span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.total-payment strong {
+    color: #125e43;
+
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    white-space: nowrap;
+}
+
+.checkout-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 16px;
+
+    border: 1px solid #82bf2d;
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #a4dd48,
+        #80bf2b
+    );
+
+    color: #244d23;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 0 #639a24,
+        0 7px 15px #85b83630;
+
+    transition: all 0.25s ease;
+}
+
+.checkout-btn:not(:disabled):hover {
+    transform: translateY(-3px);
+    background: #a2db47;
+}
+
+.checkout-btn:not(:disabled):active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.checkout-btn:disabled {
+    background: #e0e9d5;
+    border-color: #d4e0c9;
+    color: #899784;
+    box-shadow: none;
+    opacity: 1;
+}
+
+/* =========================================
+   MODAL AND HISTORY
+========================================= */
+
+.tx-modal {
+    width: min(720px, 92vw);
+    max-height: 85vh;
+    overflow-y: auto;
+
+    padding: 25px;
+    border-radius: 22px;
+}
+
+.tx-modal[open] {
+    animation: modalEntrance 0.3s ease both;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+
+    padding: 16px 0;
+    border-bottom: 1px solid #e7eee1;
+}
+
+.history-item h4 {
+    margin: 0 0 5px;
+    font-size: 13px;
+}
+
+.history-item p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: #75836e;
+}
+
+.history-item strong {
+    color: #125e43;
+    font-size: 14px;
+}
+
+.history-filter {
+    padding: 10px;
+    margin-bottom: 14px;
+
+    border: 1px solid #dce8d1;
+    border-radius: 9px;
+
+    font: inherit;
+    color: #125e43;
+    background: #f6faef;
+}
+
+.success-icon {
+    width: 65px;
+    height: 65px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 10px auto 15px;
+
+    border-radius: 50%;
+    background: #e2f5c6;
+    color: #4c962d;
+
+    font-size: 32px;
+}
+
+.success-content {
+    text-align: center;
+}
+
+.success-content p {
+    font-size: 13px;
+    margin: 10px 0;
+    color: #76876f;
+}
+
+.success-content strong {
+    display: block;
+    font-size: 27px;
+    color: #125e43;
+    margin: 14px 0;
+}
+
+.tx-notice {
+    padding: 12px 16px;
+    margin-bottom: 18px;
+
+    background: #fff0e2;
+    color: #a46536;
+
+    border: 1px solid #eed6b7;
+    border-radius: 11px;
+}
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes productEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes orderEntrance {
+    from {
+        opacity: 0;
+        transform: translateX(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes modalEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (min-width: 1600px) {
+
+    .transaction-layout {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(365px, 410px);
+        gap: 26px;
+    }
+
+    .food-grid {
+        gap: 20px;
+    }
+
+    .food-name {
+        font-size: 17px;
+    }
+
+    .food-price {
+        font-size: 18px;
+    }
+
+    .order-panel {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 1400px) {
+
+    .transaction-layout {
+        gap: 18px;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(300px, 330px);
+    }
+
+    .food-grid {
+        gap: 12px;
+    }
+
+    .tenant-tab {
+        min-width: 75px;
+        padding: 10px 13px;
+        font-size: 12px;
+    }
+
+    .food-name {
+        font-size: 13px;
+    }
+
+    .food-price {
+        font-size: 14px;
+    }
+
+    .order-panel {
+        padding: 17px;
+    }
+}
+
+@media (max-width: 1150px) {
+
+    .food-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tenant-bar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .transaction-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .food-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .order-panel {
+        position: static;
+    }
+
+    .available-label {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .food-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .food-card {
+        padding: 8px;
+    }
+
+    .food-name {
+        font-size: 12px;
+    }
+
+    .food-price {
+        font-size: 13px;
+    }
+
+    .tenant-tab {
+        min-width: 65px;
+        padding: 9px 10px;
+        font-size: 11px;
+    }
+
+    .total-payment strong {
+        font-size: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .transaksi-page *,
+    .transaksi-page *::before,
+    .transaksi-page *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+/* =========================================
+   REVISI LAYOUT TRANSAKSI
+========================================= */
+
+.transaksi-page .workspace {
+    width: auto;
+    max-width: none;
+    padding: 28px 30px;
+}
+
+.transaction-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(0, 1fr);
+
+    gap: 24px;
+    align-items: start;
+}
+
+/* =========================================
+   FOOD CARD - COMPACT HORIZONTAL
+========================================= */
+
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.food-card {
+    display: grid;
+
+    grid-template-columns: 95px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+
+    column-gap: 13px;
+    row-gap: 8px;
+
+    padding: 12px;
+    min-height: 125px;
+
+    border-radius: 16px;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #f8fcef
+    );
+
+    box-shadow:
+        0 4px 0 #d6e4c9,
+        0 8px 18px #19482e0c;
+}
+
+/* FOTO MAKANAN */
+
+.food-image {
+    grid-column: 1;
+    grid-row: 1 / 3;
+
+    width: 95px;
+    height: 100%;
+
+    min-height: 100px;
+    aspect-ratio: auto;
+
+    border-radius: 11px;
+    overflow: hidden;
+}
+
+.food-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+/* STOK MAKANAN */
+
+.food-stock {
+    top: 5px;
+    right: 5px;
+
+    font-size: 10px;
+    padding: 4px 6px;
+    border-radius: 5px;
+}
+
+/* INFORMASI MAKANAN */
+
+.food-info {
+    grid-column: 2;
+    grid-row: 1;
+
+    padding: 3px 0 0;
+}
+
+.food-name {
+    min-height: 0;
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.food-price {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+/* TOMBOL JUMLAH PESANAN */
+
+.quantity-control {
+    grid-column: 2;
+    grid-row: 2;
+
+    padding: 6px 0 0;
+    border-top: 1px solid #e9efe3;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+
+    font-size: 19px;
+    border-radius: 7px;
+}
+
+.quantity-value {
+    font-size: 15px;
+}
+
+/* =========================================
+   PERBESAR ORDER DETAIL
+========================================= */
+
+.order-panel {
+    width: 100%;
+    min-height: 610px;
+
+    padding: 25px;
+
+    position: sticky;
+    top: 25px;
+
+    border-radius: 21px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 5px 0 #d6e3ca,
+        0 12px 30px #19482e12;
+}
+
+.order-heading {
+    padding-bottom: 20px;
+}
+
+.order-heading h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.order-heading p {
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.clear-btn {
+    font-size: 12px;
+    padding: 9px 12px;
+}
+
+/* =========================================
+   ORDER ITEMS
+========================================= */
+
+.cart-items {
+    min-height: 150px;
+    max-height: 340px;
+
+    padding: 6px 0 15px;
+}
+
+.cart-item {
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 14px;
+
+    padding: 15px 0;
+}
+
+.cart-image {
+    width: 70px;
+    height: 70px;
+
+    border-radius: 12px;
+}
+
+.cart-name {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.cart-tenant {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.cart-bottom {
+    margin-top: 8px;
+}
+
+.cart-price {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.cart-quantity {
+    gap: 9px;
+    font-size: 14px;
+}
+
+.cart-quantity button {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+}
+
+/* =========================================
+   PAYMENT SUMMARY
+========================================= */
+
+.payment-summary {
+    padding-top: 20px;
+}
+
+.payment-summary h3 {
+    font-size: 18px;
+    margin-bottom: 19px;
+}
+
+.summary-row {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.voucher-input {
+    padding: 9px;
+    margin-top: 20px;
+}
+
+.voucher-input input {
+    font-size: 13px;
+}
+
+.voucher-input button {
+    font-size: 12px;
+    padding: 10px 14px;
+}
+
+.payment-method h4 {
+    font-size: 14px;
+}
+
+.payment-option {
+    padding: 14px;
+    font-size: 14px;
+}
+
+/* =========================================
+   TOTAL DAN CHECKOUT
+========================================= */
+
+.total-payment {
+    margin-top: 25px;
+    padding: 22px 0;
+}
+
+.total-payment span {
+    font-size: 15px;
+}
+
+.total-payment strong {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.checkout-btn {
+    min-height: 53px;
+    padding: 16px;
+
+    font-size: 16px;
+    border-radius: 12px;
+}
+
+/* =========================================
+   DESKTOP BESAR
+========================================= */
+
+@media (min-width: 1600px) {
+
+    .food-card {
+        grid-template-columns: 115px minmax(0, 1fr);
+        min-height: 145px;
+    }
+
+    .food-image {
+        width: 115px;
+        min-height: 115px;
+    }
+
+    .food-name {
+        font-size: 17px;
+    }
+
+    .food-price {
+        font-size: 16px;
+    }
+
+    .order-panel {
+        padding: 28px;
+    }
+}
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1350px) {
+
+    .transaction-layout {
+        grid-template-columns:
+            minmax(0, 1.4fr)
+            minmax(350px, 1fr);
+
+        gap: 18px;
+    }
+
+    .food-card {
+        grid-template-columns: 75px minmax(0, 1fr);
+        padding: 10px;
+        column-gap: 10px;
+    }
+
+    .food-image {
+        width: 75px;
+        min-height: 85px;
+    }
+
+    .food-name {
+        font-size: 13px;
+    }
+
+    .food-price {
+        font-size: 13px;
+    }
+
+    .order-panel {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 1100px) {
+
+    .food-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .transaction-layout {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(300px, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+
+    .transaction-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .food-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .order-panel {
+        position: static;
+        min-height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .transaksi-page .workspace {
+        padding: 15px 12px;
+    }
+
+    .food-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .total-payment strong {
+        font-size: 22px;
+    }
+}
+/* =========================================
+   FONT SIZE IMPROVEMENT
+========================================= */
+
+.transaksi-page {
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+}
+
+/* HEADER */
+
+.transaksi-page h1 {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.transaksi-page .search input {
+    font-size: 14px;
+}
+
+/* TENANT BUTTON */
+
+.tenant-tab {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 20px;
+}
+
+.history-btn {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* DAFTAR MENU */
+
+.catalog-heading h2 {
+    font-size: 25px;
+}
+
+.catalog-heading p {
+    font-size: 14px;
+}
+
+.available-label {
+    font-size: 13px;
+}
+
+/* FOOD CARD */
+
+.food-name {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.food-price {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.food-stock {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.quantity-value {
+    font-size: 17px;
+}
+
+.quantity-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 21px;
+}
+
+/* ORDER DETAIL */
+
+.order-heading h2 {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.order-heading p {
+    font-size: 14px;
+}
+
+.clear-btn {
+    font-size: 13px;
+}
+
+.empty-cart strong {
+    font-size: 16px;
+}
+
+.empty-cart p {
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* CART ITEMS */
+
+.cart-name {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.cart-tenant {
+    font-size: 13px;
+}
+
+.cart-price {
+    font-size: 16px;
+}
+
+.cart-quantity {
+    font-size: 15px;
+}
+
+/* PAYMENT SUMMARY */
+
+.payment-summary h3 {
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.summary-row {
+    font-size: 16px;
+}
+
+.voucher-input input {
+    font-size: 14px;
+}
+
+.voucher-input button {
+    font-size: 14px;
+}
+
+.voucher-message {
+    font-size: 12px;
+}
+
+.payment-method h4 {
+    font-size: 16px;
+}
+
+.payment-option {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* TOTAL PEMBAYARAN */
+
+.total-payment span {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.total-payment strong {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.checkout-btn {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* RESPONSIVE LAPTOP */
+
+@media (max-width: 1350px) {
+
+    .food-name {
+        font-size: 15px;
+    }
+
+    .food-price {
+        font-size: 14px;
+    }
+
+    .tenant-tab {
+        font-size: 13px;
+        padding: 11px 15px;
+    }
+
+    .summary-row {
+        font-size: 14px;
+    }
+
+    .total-payment strong {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .food-name {
+        font-size: 14px;
+    }
+
+    .total-payment strong {
+        font-size: 23px;
+    }
+}

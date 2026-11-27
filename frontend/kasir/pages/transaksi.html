@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Transaksi Kasir | SisaRasa</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/transaksi.css">
+
+    <script defer src="/js/transaksi.js"></script>
+</head>
+
+<body class="transaksi-page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <a class="brand" href="/">
+            <img
+                src="/assets/logo.svg"
+                alt="SisaRasa"
+                class="brand-logo"
+            >
+        </a>
+
+        <nav>
+
+            <a class="nav-item" href="/">
+                <span data-icon="dashboard"></span>
+                Dashboard
+            </a>
+
+            <a class="nav-item active"
+               href="/pages/transaksi.html">
+                <span data-icon="receipt"></span>
+                Transaksi
+            </a>
+
+            <a class="nav-item" href="/pages/tenant.html">
+                <span data-icon="store"></span>
+                Tenant
+            </a>
+
+            <a class="nav-item" href="/pages/voucher.html">
+                <span data-icon="ticket"></span>
+                Voucher
+            </a>
+
+        </nav>
+
+        <div class="side-bottom">
+
+            <button class="nav-item" id="logout">
+                <span data-icon="logout"></span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="workspace">
+
+        <header class="topbar">
+
+            <h1>Transaksi</h1>
+
+            <div class="header-actions">
+
+                <label class="search">
+                    <span data-icon="search"></span>
+
+                    <input
+                        type="search"
+                        id="menu-search"
+                        placeholder="Cari menu makanan..."
+                    >
+                </label>
+
+                <button class="icon-btn" id="refresh"
+                        title="Muat ulang">
+                    <span data-icon="refresh"></span>
+                </button>
+
+                <div class="profile">
+
+                    <span class="avatar">B</span>
+
+                    <span>
+                        <strong>Bu Irma</strong>
+                        <small>Kasir</small>
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- TENANT FILTER -->
+
+        <section class="tenant-bar">
+
+            <div class="tenant-tabs" id="tenant-tabs"></div>
+
+            <button class="history-btn" id="history">
+                <span data-icon="history"></span>
+                Riwayat Transaksi
+            </button>
+
+        </section>
+
+        <div id="notice" class="tx-notice" hidden></div>
+
+        <!-- TRANSACTION LAYOUT -->
+
+        <div class="transaction-layout">
+
+            <!-- PRODUCT SECTION -->
+
+            <section class="catalog">
+
+                <div class="catalog-heading">
+
+                    <div>
+                        <h2>Daftar Menu</h2>
+                        <p id="menu-count">Memuat menu...</p>
+                    </div>
+
+                    <span class="available-label">
+                        <i></i>
+                        Menu tersedia
+                    </span>
+
+                </div>
+
+                <div class="food-grid" id="food-grid"></div>
+
+            </section>
+
+            <!-- ORDER DETAIL -->
+
+            <aside class="order-panel">
+
+                <div class="order-heading">
+
+                    <div>
+
+                        <h2>Order Detail</h2>
+
+                        <p id="order-count">0 item pesanan</p>
+
+                    </div>
+
+                    <button class="clear-btn" id="clear-cart">
+                        Clear All
+                    </button>
+
+                </div>
+
+                <!-- CART -->
+
+                <div id="cart-items" class="cart-items"></div>
+
+                <!-- PAYMENT SUMMARY -->
+
+                <section class="payment-summary">
+
+                    <h3>Payment Summary</h3>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <strong id="subtotal">Rp 0</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Diskon voucher</span>
+                        <strong id="discount">Rp 0</strong>
+                    </div>
+
+                    <!-- VOUCHER -->
+
+                    <div class="voucher-input">
+
+                        <span data-icon="ticket"></span>
+
+                        <input
+                            type="text"
+                            id="voucher-code"
+                            placeholder="Masukkan kode voucher"
+                            autocomplete="off"
+                        >
+
+                        <button id="apply-voucher">
+                            Apply
+                        </button>
+
+                    </div>
+
+                    <p id="voucher-message"
+                       class="voucher-message"></p>
+
+                    <!-- PAYMENT METHOD -->
+
+                    <div class="payment-method">
+
+                        <h4>Metode Pembayaran</h4>
+
+                        <div class="payment-options">
+
+                            <button
+                                class="payment-option selected"
+                                data-payment="cash"
+                                aria-pressed="true"
+                            >
+                                <span data-icon="wallet"></span>
+                                Tunai
+                            </button>
+
+                            <button
+                                class="payment-option"
+                                data-payment="qris"
+                                aria-pressed="false"
+                            >
+                                <span data-icon="qr"></span>
+                                QRIS
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- TOTAL -->
+
+                    <div class="total-payment">
+
+                        <span>Total Amount</span>
+
+                        <strong id="total">Rp 0</strong>
+
+                    </div>
+
+                    <button id="checkout" class="checkout-btn"
+                            disabled>
+                        <span data-icon="receipt"></span>
+                        Checkout
+                        <span>→</span>
+                    </button>
+
+                </section>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- POPUP -->
+
+    <dialog id="transaction-modal" class="tx-modal">
+
+        <div class="modal-head">
+
+            <h2 id="modal-title">Transaksi</h2>
+
+            <button class="icon-btn" id="close-modal"
+                    aria-label="Tutup">
+                ×
+            </button>
+
+        </div>
+
+        <div id="modal-content"></div>
+
+    </dialog>
+
+    <!-- NOTIFICATION -->
+
+    <div class="toast" id="toast" role="status" hidden></div>
+
+</body>
+</html>
